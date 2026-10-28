@@ -11,7 +11,7 @@ val releaseKeystore = System.getenv("ZAPIO_KEYSTORE")?.let(::file)?.takeIf { it.
 
 android {
     namespace = "io.github.reichimd.zapio"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "io.github.reichimd.zapio"
