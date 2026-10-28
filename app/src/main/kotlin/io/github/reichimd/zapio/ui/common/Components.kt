@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -24,11 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import io.github.reichimd.zapio.R
 import io.github.reichimd.zapio.ui.theme.ZapioColors
 
 /** Round 44 dp button with a line border, as in the top bar. */
@@ -88,7 +90,7 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
 fun WordMark(modifier: Modifier = Modifier) {
     Text(
         text = buildAnnotatedString {
-            append("zapio")
+            append(stringResource(R.string.app_name).lowercase())
             withStyle(SpanStyle(color = ZapioColors.Accent)) { append(".") }
         },
         modifier = modifier,
@@ -108,7 +110,7 @@ fun TopBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .heightIn(min = 48.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {

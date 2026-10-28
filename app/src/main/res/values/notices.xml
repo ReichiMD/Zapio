@@ -3,6 +3,8 @@
 <resources>
     <string name="source_url" translatable="false">https://github.com/ReichiMD/Zapio</string>
 
+    <string name="about_notice_line" translatable="false">%1$s · %2$s</string>
+
     <string name="license_apache_2_0" translatable="false">Apache License 2.0</string>
     <string name="license_ofl_1_1" translatable="false">SIL Open Font License 1.1</string>
 

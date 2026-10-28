@@ -24,8 +24,9 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v5
-      - name: Build debug APK, lint, unit tests
-        run: ./gradlew --stacktrace assembleDebug lintDebug :adb:test
+      - name: Build debug and release APK, lint, unit tests
+        # Release is built unsigned here so R8 problems show up before merging.
+        run: ./gradlew --stacktrace assembleDebug assembleRelease lintDebug :adb:test
       - name: Keep lint report
         if: always()
         uses: actions/upload-artifact@v5
@@ -114,9 +115,15 @@ jobs:
         run: |
           VERSION="0.0.${GITHUB_RUN_NUMBER}"
           cp app/build/outputs/apk/release/app-release.apk "zapio-${VERSION}.apk"
-          gh release create "v${VERSION}" "zapio-${VERSION}.apk" \
-            --title "Zapio ${VERSION}" \
-            --notes "Built from ${GITHUB_SHA::7}. Download the APK on your phone and install it."
+          # A re-run keeps the run number, so reuse the release instead of failing.
+          if gh release view "v${VERSION}" > /dev/null 2>&1; then
+            gh release upload "v${VERSION}" "zapio-${VERSION}.apk" --clobber
+          else
+            gh release create "v${VERSION}" "zapio-${VERSION}.apk" \
+              --target "$GITHUB_SHA" \
+              --title "Zapio ${VERSION}" \
+              --notes "Built from ${GITHUB_SHA::7}. Download the APK on your phone and install it."
+          fi
       - name: Remove signing key
         if: always()
         run: rm -f "$RUNNER_TEMP/zapio.keystore"

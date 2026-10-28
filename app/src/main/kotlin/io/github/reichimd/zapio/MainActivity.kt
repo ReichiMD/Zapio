@@ -54,7 +54,7 @@ private const val LICENSE_PREFIX = "license:"
 private fun ZapioApp() {
     var stack by rememberSaveable { mutableStateOf(listOf(DEVICES)) }
     val current = stack.last()
-    val back = { stack = stack.dropLast(1) }
+    val back = { if (stack.size > 1) stack = stack.dropLast(1) }
 
     BackHandler(enabled = stack.size > 1, onBack = back)
 

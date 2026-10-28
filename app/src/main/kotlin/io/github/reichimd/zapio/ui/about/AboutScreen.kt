@@ -112,7 +112,7 @@ private fun NoticeRow(notice: ThirdPartyNotice, onClick: () -> Unit) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(stringResource(notice.title), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "${stringResource(notice.author)} · ${stringResource(notice.licenseName)}",
+                    stringResource(R.string.about_notice_line, stringResource(notice.author), stringResource(notice.licenseName)),
                     style = MaterialTheme.typography.bodySmall,
                     color = ZapioColors.TextMuted,
                 )
