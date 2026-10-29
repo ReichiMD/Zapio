@@ -14,6 +14,7 @@ import io.github.reichimd.zapio.adb.TvResult
 import io.github.reichimd.zapio.adb.TvScanner
 import io.github.reichimd.zapio.data.DeviceStore
 import io.github.reichimd.zapio.data.SavedTv
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,6 +78,7 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
     // Read outside the lock too: closing it is the only way to free a read stuck on a dead TV.
     @Volatile
     private var connection: TvConnection? = null
+    @Volatile
     private var scanId = 0
     private var connectJob: Job? = null
     private var scanJob: Job? = null
@@ -114,8 +116,13 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                 } catch (e: TvException) {
                     _state.value = ConnectionState.Failed(address, e.problem)
                     return@withLock
-                } catch (e: IOException) {
-                    // Key file unreadable or similar: nothing the TV did.
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // Key file unreadable or similar: nothing the TV did. A fresh key next time.
+                    keys = null
+                    privateKey.delete()
+                    publicKey.delete()
                     _state.value = ConnectionState.Failed(address, TvProblem.CONNECTION_LOST)
                     return@withLock
                 }
@@ -128,10 +135,13 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                     // Cancelled or replaced meanwhile: this connection is no longer wanted.
                     ensureActive()
                     connection = tv
+                    // A disconnect right between the check above and here closes nothing; check again.
+                    ensureActive()
                     val saved = store.remember(address, name)
                     _ports.update { it + (saved.key to PortState.OPEN) }
                     _state.value = ConnectionState.Connected(saved)
                 } catch (e: Throwable) {
+                    if (connection === tv) connection = null
                     tv.close()
                     throw e
                 }
@@ -239,7 +249,7 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                     _install.value = InstallState.Failed(fileName, InstallFailure.Connection(TvProblem.CONNECTION_LOST))
                     return@withLock
                 }
-                _install.value = try {
+                val outcome = try {
                     val stream = context.contentResolver.openInputStream(uri) ?: throw IOException("no stream")
                     val input = PhoneFileInputStream(stream)
                     var lastPercent = -1L
@@ -271,7 +281,13 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                     InstallState.Failed(fileName, InstallFailure.FileUnreadable)
                 } catch (e: SecurityException) {
                     InstallState.Failed(fileName, InstallFailure.FileUnreadable)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    InstallState.Failed(fileName, InstallFailure.Connection(TvProblem.CONNECTION_LOST))
                 }
+                // After a disconnect the screen is gone; do not bring back an old result.
+                if (job.isActive) _install.value = outcome
             }
         }
     }

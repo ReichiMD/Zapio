@@ -123,10 +123,10 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
         private const val CONNECT_TIMEOUT_MS = 5_000
 
         /**
-         * Longest silence on a read before the connection counts as dead. Long enough for the TV
-         * to finish installing a large app; a later remote control must keep its shell busy.
+         * Longest silence on a read before the connection counts as dead. Long enough for a slow
+         * TV to finish installing a large app; a later remote control must keep its shell busy.
          */
-        private const val READ_TIMEOUT_MS = 120_000
+        private const val READ_TIMEOUT_MS = 300_000
 
         /** How long the TV's "Allow USB debugging?" prompt may stay unanswered. */
         const val APPROVAL_TIMEOUT_MS = 60_000L
