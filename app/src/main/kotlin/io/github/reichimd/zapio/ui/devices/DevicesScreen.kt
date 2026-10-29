@@ -58,6 +58,7 @@ fun DevicesScreen(
     tvs: TvManager,
     savedTvs: List<SavedTv>,
     onOpenDevice: () -> Unit,
+    onOpenRemote: () -> Unit,
     onSettings: () -> Unit,
     onAbout: () -> Unit,
 ) {
@@ -94,6 +95,7 @@ fun DevicesScreen(
         scan = scan,
         onConnect = connect,
         onOpenDevice = onOpenDevice,
+        onOpenRemote = onOpenRemote,
         onDisconnect = tvs::disconnect,
         onForget = { forgetKey = it.key },
         onScan = tvs::startScan,
@@ -147,6 +149,7 @@ private fun DevicesContent(
     scan: ScanState,
     onConnect: (TvAddress) -> Unit,
     onOpenDevice: () -> Unit,
+    onOpenRemote: () -> Unit,
     onDisconnect: () -> Unit,
     onForget: (SavedTv) -> Unit,
     onScan: () -> Unit,
@@ -182,7 +185,7 @@ private fun DevicesContent(
         ) { WordMark() }
 
         if (connected != null) {
-            ActiveTvCard(connected, onOpenDevice, onDisconnect, onForget = { onForget(connected) })
+            ActiveTvCard(connected, onOpenRemote, onOpenDevice, onDisconnect, onForget = { onForget(connected) })
         }
         if (connected == null && savedTvs.isEmpty()) EmptyDevicesCard()
 
@@ -208,7 +211,13 @@ private fun DevicesContent(
 }
 
 @Composable
-private fun ActiveTvCard(tv: SavedTv, onOpen: () -> Unit, onDisconnect: () -> Unit, onForget: () -> Unit) {
+private fun ActiveTvCard(
+    tv: SavedTv,
+    onRemote: () -> Unit,
+    onOpen: () -> Unit,
+    onDisconnect: () -> Unit,
+    onForget: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         SectionLabel(stringResource(R.string.devices_active_title))
         ZapioCard {
@@ -230,6 +239,12 @@ private fun ActiveTvCard(tv: SavedTv, onOpen: () -> Unit, onDisconnect: () -> Un
             // Stacked, so longer translations still fit on narrow phones.
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 PrimaryButton(
+                    text = stringResource(R.string.remote_title),
+                    onClick = onRemote,
+                    icon = R.drawable.ic_remote,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                SecondaryButton(
                     text = stringResource(R.string.devices_all_tools),
                     onClick = onOpen,
                     modifier = Modifier.fillMaxWidth(),
@@ -445,7 +460,7 @@ private fun DevicesScreenPreview() {
                 savedTvs = listOf(living, kitchen),
                 ports = mapOf(kitchen.key to PortState.CLOSED),
                 scan = ScanState(finished = true, found = listOf(TvAddress("192.0.2.30"))),
-                onConnect = {}, onOpenDevice = {}, onDisconnect = {}, onForget = {}, onScan = {}, onClearScan = {},
+                onConnect = {}, onOpenDevice = {}, onOpenRemote = {}, onDisconnect = {}, onForget = {}, onScan = {}, onClearScan = {},
                 onEnterIp = {}, onSettings = {}, onAbout = {},
             )
         }

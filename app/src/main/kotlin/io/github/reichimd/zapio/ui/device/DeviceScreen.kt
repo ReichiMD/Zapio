@@ -37,7 +37,13 @@ import io.github.reichimd.zapio.ui.theme.ZapioTheme
 
 /** Tools for the connected TV. More tiles join in later stages. */
 @Composable
-fun DeviceScreen(tv: SavedTv, onBack: () -> Unit, onInstall: () -> Unit, onDisconnect: () -> Unit) {
+fun DeviceScreen(
+    tv: SavedTv,
+    onBack: () -> Unit,
+    onInstall: () -> Unit,
+    onRemote: () -> Unit,
+    onDisconnect: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,6 +66,12 @@ fun DeviceScreen(tv: SavedTv, onBack: () -> Unit, onInstall: () -> Unit, onDisco
         }
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             SectionLabel(stringResource(R.string.device_tools))
+            ToolTile(
+                icon = R.drawable.ic_remote,
+                title = stringResource(R.string.remote_title),
+                text = stringResource(R.string.remote_text),
+                onClick = onRemote,
+            )
             ToolTile(
                 icon = R.drawable.ic_install,
                 title = stringResource(R.string.device_install),
@@ -115,7 +127,7 @@ private fun ToolTile(@DrawableRes icon: Int, title: String, text: String, onClic
 private fun DeviceScreenPreview() {
     ZapioTheme {
         Surface(color = ZapioColors.Background, contentColor = ZapioColors.Text) {
-            DeviceScreen(SavedTv(TvAddress("192.0.2.20"), null, 0), onBack = {}, onInstall = {}, onDisconnect = {})
+            DeviceScreen(SavedTv(TvAddress("192.0.2.20"), null, 0), onBack = {}, onInstall = {}, onRemote = {}, onDisconnect = {})
         }
     }
 }

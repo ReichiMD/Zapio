@@ -56,7 +56,7 @@
     <string name="device_tools">Werkzeuge</string>
     <string name="device_install">App installieren</string>
     <string name="device_install_text">Eine APK vom Handy auf den TV bringen</string>
-    <string name="device_more_soon">Fernbedienung, Dateien und mehr kommen in den nächsten Versionen.</string>
+    <string name="device_more_soon">Dateien, Terminal und mehr kommen in den nächsten Versionen.</string>
     <string name="device_disconnect">Trennen</string>
     <string name="device_adb_hint">Wenn du fertig bist, schalte ADB-Debugging am TV wieder aus.</string>
 
@@ -84,6 +84,30 @@
     <string name="install_tv_cpu">Dein TV braucht: %1$s</string>
     <string name="install_detail">Details: %1$s</string>
 
+
+    <!-- Fernbedienung -->
+    <string name="remote_title">Fernbedienung</string>
+    <string name="remote_text">Pfeiltasten, OK, Lautstärke und Text</string>
+    <string name="remote_status_starting">Verbinde …</string>
+    <string name="remote_status_reconnecting">Verbindung weg, verbinde neu …</string>
+    <string name="remote_up">Hoch</string>
+    <string name="remote_down">Runter</string>
+    <string name="remote_left">Links</string>
+    <string name="remote_right">Rechts</string>
+    <string name="remote_back">Zurück am TV</string>
+    <string name="remote_home">Startseite</string>
+    <string name="remote_menu">Menü</string>
+    <string name="remote_play_pause">Abspielen oder Pause</string>
+    <string name="remote_volume_down">Leiser</string>
+    <string name="remote_volume_up">Lauter</string>
+    <string name="remote_mute">Stumm</string>
+    <string name="remote_power">Ein/Aus</string>
+    <string name="remote_text_label">Text für den TV</string>
+    <string name="remote_text_hint">Text an TV senden …</string>
+    <string name="remote_text_send">Senden</string>
+    <string name="remote_text_note">Wähle zuerst am TV ein Textfeld aus. Umlaute kommen als ae, oe, ue an.</string>
+    <string name="remote_delete">Löschen</string>
+    <string name="remote_enter">Eingabe</string>
     <!-- Einstellungen -->
     <string name="settings_title">Einstellungen</string>
     <string name="settings_language">Sprache</string>

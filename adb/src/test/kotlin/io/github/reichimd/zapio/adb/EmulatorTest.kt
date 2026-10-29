@@ -100,4 +100,34 @@ class EmulatorTest {
     fun sendsKey() {
         assertEquals(0, tv.sendKey(TvKey.HOME).exitCode)
     }
+
+    @Test
+    fun remoteSendsKeysAndText() {
+        tv.remote().use { remote ->
+            remote.ping()
+            remote.send(
+                listOf(
+                    RemoteInput.Key(TvKey.HOME),
+                    RemoteInput.Text("Hallo Welt 123 Größe"),
+                    RemoteInput.Key(TvKey.DEL),
+                ),
+            )
+            // Shows in the CI log how fast a single key gets through the open shell.
+            val count = 10
+            val started = System.nanoTime()
+            repeat(count) { remote.send(listOf(RemoteInput.Key(TvKey.DPAD_DOWN))) }
+            val each = (System.nanoTime() - started) / 1_000_000 / count
+            println("Remote: one key in $each ms on average")
+        }
+    }
+
+    @Test
+    fun remoteReconnectsAfterDroppedConnection() {
+        tv.remote().use { remote ->
+            remote.ping()
+            tv.close()
+            remote.ping()
+            remote.send(listOf(RemoteInput.Key(TvKey.HOME)))
+        }
+    }
 }

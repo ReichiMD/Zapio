@@ -58,7 +58,7 @@
     <string name="device_tools">Tools</string>
     <string name="device_install">Install app</string>
     <string name="device_install_text">Send an APK from your phone to the TV</string>
-    <string name="device_more_soon">Remote control, files and more come in the next versions.</string>
+    <string name="device_more_soon">Files, terminal and more come in the next versions.</string>
     <string name="device_disconnect">Disconnect</string>
     <string name="device_adb_hint">When you are done, turn ADB debugging off again on the TV.</string>
 
@@ -86,6 +86,32 @@
     <string name="install_tv_cpu">Your TV takes: %1$s</string>
     <string name="install_detail">Details: %1$s</string>
 
+
+    <!-- Remote control -->
+    <string name="remote_title">Remote control</string>
+    <string name="remote_text">Arrow keys, OK, volume and text</string>
+    <string name="remote_status_starting">Connecting…</string>
+    <string name="remote_status_reconnecting">Connection lost, reconnecting…</string>
+    <string name="remote_up">Up</string>
+    <string name="remote_down">Down</string>
+    <string name="remote_left">Left</string>
+    <string name="remote_right">Right</string>
+    <string name="remote_ok" translatable="false">OK</string>
+    <string name="remote_back">Back on the TV</string>
+    <string name="remote_home">Home</string>
+    <string name="remote_menu">Menu</string>
+    <string name="remote_play_pause">Play or pause</string>
+    <string name="remote_volume" translatable="false">VOL</string>
+    <string name="remote_volume_down">Volume down</string>
+    <string name="remote_volume_up">Volume up</string>
+    <string name="remote_mute">Mute</string>
+    <string name="remote_power">Power</string>
+    <string name="remote_text_label">Text for the TV</string>
+    <string name="remote_text_hint">Send text to the TV…</string>
+    <string name="remote_text_send">Send</string>
+    <string name="remote_text_note">Select a text field on the TV first. Umlauts arrive as ae, oe, ue.</string>
+    <string name="remote_delete">Delete</string>
+    <string name="remote_enter">Enter</string>
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_language">Language</string>

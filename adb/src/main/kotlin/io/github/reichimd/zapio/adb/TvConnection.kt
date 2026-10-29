@@ -35,7 +35,7 @@ sealed interface TvResult {
  *
  * Connection faults come out as [TvException] with a [TvProblem].
  */
-class TvConnection private constructor(private val dadb: Dadb, val address: TvAddress) : AutoCloseable {
+class TvConnection private constructor(internal val dadb: Dadb, val address: TvAddress) : AutoCloseable {
 
     fun shell(command: String): ShellResult = guard {
         val response = dadb.shell(command)
@@ -98,13 +98,14 @@ class TvConnection private constructor(private val dadb: Dadb, val address: TvAd
     fun ensureConnected() {
         if (answersWithin(QUICK_CHECK_MS)) return
         if (answersWithin(APPROVAL_TIMEOUT_MS)) return
-        throw TvException(
-            when (TvScanner.probe(address)) {
-                PortState.CLOSED -> TvProblem.ADB_OFF
-                PortState.NO_ANSWER -> TvProblem.NO_ANSWER
-                PortState.OPEN -> TvProblem.CONNECTION_LOST
-            },
-        )
+        throw TvException(problemNow())
+    }
+
+    /** Why the TV cannot be used right now, judged by a look at its ADB port. */
+    internal fun problemNow(): TvProblem = when (TvScanner.probe(address)) {
+        PortState.CLOSED -> TvProblem.ADB_OFF
+        PortState.NO_ANSWER -> TvProblem.NO_ANSWER
+        PortState.OPEN -> TvProblem.CONNECTION_LOST
     }
 
     /**
@@ -145,6 +146,9 @@ class TvConnection private constructor(private val dadb: Dadb, val address: TvAd
 
     fun sendKey(key: TvKey): ShellResult = shell("input keyevent ${key.code}")
 
+    /** A remote control that keeps its own shell open on this connection. */
+    fun remote(): TvRemote = TvRemote(this)
+
     override fun close() = dadb.close()
 
     private fun SyncResult.toTvResult(): TvResult = when (this) {
@@ -171,7 +175,7 @@ class TvConnection private constructor(private val dadb: Dadb, val address: TvAd
 
         /**
          * Longest silence on a read before the connection counts as dead. Long enough for a slow
-         * TV to finish installing a large app; a later remote control must keep its shell busy.
+         * TV to finish installing a large app. The remote control has its own, shorter time limits.
          */
         private const val READ_TIMEOUT_MS = 300_000
 
