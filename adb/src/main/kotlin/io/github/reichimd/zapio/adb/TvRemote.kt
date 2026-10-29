@@ -3,7 +3,6 @@ package io.github.reichimd.zapio.adb
 import dadb.AdbShellPacket
 import dadb.AdbStreamOpenException
 import dadb.AdbShellStream
-import java.io.IOException
 import java.io.InterruptedIOException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.FutureTask
@@ -58,7 +57,8 @@ class TvRemote internal constructor(private val tv: TvConnection) : AutoCloseabl
                 open.write("echo $start;$command;echo $end\n")
             } catch (e: InterruptedIOException) {
                 throw InterruptedException()
-            } catch (e: IOException) {
+            } catch (e: Exception) {
+                // IOException, or IllegalStateException when the connection was closed meanwhile.
                 // Nothing reached the TV, so sending again through a new shell cannot fire a key twice.
                 closeShell()
                 if (attempt == 2) throw TvException(tv.problemNow(), e)
@@ -147,7 +147,7 @@ class TvRemote internal constructor(private val tv: TvConnection) : AutoCloseabl
         }
 
         private fun closeWhenDone(task: FutureTask<AdbShellStream>) {
-            Thread({ runCatching { task.get() }.getOrNull()?.close() }, "zapio-remote-cleanup")
+            Thread({ runCatching { task.get().close() } }, "zapio-remote-cleanup")
                 .apply { isDaemon = true }.start()
         }
     }
