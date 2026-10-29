@@ -81,6 +81,7 @@
     <string name="install_problem_blocked">Der TV hat die Installation blockiert.</string>
     <string name="install_problem_other">Der TV hat die App abgelehnt.</string>
     <string name="install_tv_says">Der TV meldet: %1$s</string>
+    <string name="install_tv_cpu">Dein TV braucht: %1$s</string>
     <string name="install_detail">Details: %1$s</string>
 
     <!-- Einstellungen -->

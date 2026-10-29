@@ -87,6 +87,11 @@ class EmulatorTest {
     }
 
     @Test
+    fun knowsItsCpuTypes() {
+        assertTrue(tv.cpuTypes().contains("x86_64"))
+    }
+
+    @Test
     fun knowsItsName() {
         assertTrue(!tv.deviceName().isNullOrBlank())
     }

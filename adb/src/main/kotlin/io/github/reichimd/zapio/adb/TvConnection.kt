@@ -136,6 +136,13 @@ class TvConnection private constructor(private val dadb: Dadb, val address: TvAd
         return shell("getprop ro.product.model").output.trim().ifEmpty { null }
     }
 
+    /** Processor types the TV runs apps for, best first, e.g. `armeabi-v7a`. */
+    fun cpuTypes(): List<String> {
+        val list = shell("getprop ro.product.cpu.abilist").output.trim()
+            .ifEmpty { shell("getprop ro.product.cpu.abi").output.trim() }
+        return list.split(',').map { it.trim() }.filter { it.isNotEmpty() }
+    }
+
     fun sendKey(key: TvKey): ShellResult = shell("input keyevent ${key.code}")
 
     override fun close() = dadb.close()

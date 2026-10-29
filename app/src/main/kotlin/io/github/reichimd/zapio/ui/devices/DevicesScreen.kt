@@ -94,6 +94,7 @@ fun DevicesScreen(
         scan = scan,
         onConnect = connect,
         onOpenDevice = onOpenDevice,
+        onDisconnect = tvs::disconnect,
         onForget = { forgetKey = it.key },
         onScan = tvs::startScan,
         onClearScan = tvs::clearScan,
@@ -146,6 +147,7 @@ private fun DevicesContent(
     scan: ScanState,
     onConnect: (TvAddress) -> Unit,
     onOpenDevice: () -> Unit,
+    onDisconnect: () -> Unit,
     onForget: (SavedTv) -> Unit,
     onScan: () -> Unit,
     onClearScan: () -> Unit,
@@ -179,7 +181,9 @@ private fun DevicesContent(
             },
         ) { WordMark() }
 
-        if (connected != null) ActiveTvCard(connected, onOpenDevice)
+        if (connected != null) {
+            ActiveTvCard(connected, onOpenDevice, onDisconnect, onForget = { onForget(connected) })
+        }
         if (connected == null && savedTvs.isEmpty()) EmptyDevicesCard()
 
         if (others.isNotEmpty()) {
@@ -204,7 +208,7 @@ private fun DevicesContent(
 }
 
 @Composable
-private fun ActiveTvCard(tv: SavedTv, onOpen: () -> Unit) {
+private fun ActiveTvCard(tv: SavedTv, onOpen: () -> Unit, onDisconnect: () -> Unit, onForget: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         SectionLabel(stringResource(R.string.devices_active_title))
         ZapioCard {
@@ -214,12 +218,29 @@ private fun ActiveTvCard(tv: SavedTv, onOpen: () -> Unit) {
                     Text(tv.title, style = MaterialTheme.typography.titleLarge)
                     StatusLine(stringResource(R.string.devices_status_connected), ZapioColors.Connected)
                 }
+                IconButton(onClick = onForget) {
+                    Icon(
+                        painterResource(R.drawable.ic_close),
+                        contentDescription = stringResource(R.string.devices_forget, tv.title),
+                        tint = ZapioColors.TextMuted,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
             }
-            PrimaryButton(
-                text = stringResource(R.string.devices_all_tools),
-                onClick = onOpen,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            // Stacked, so longer translations still fit on narrow phones.
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                PrimaryButton(
+                    text = stringResource(R.string.devices_all_tools),
+                    onClick = onOpen,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                SecondaryButton(
+                    text = stringResource(R.string.device_disconnect),
+                    onClick = onDisconnect,
+                    danger = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 }
@@ -424,7 +445,7 @@ private fun DevicesScreenPreview() {
                 savedTvs = listOf(living, kitchen),
                 ports = mapOf(kitchen.key to PortState.CLOSED),
                 scan = ScanState(finished = true, found = listOf(TvAddress("192.0.2.30"))),
-                onConnect = {}, onOpenDevice = {}, onForget = {}, onScan = {}, onClearScan = {},
+                onConnect = {}, onOpenDevice = {}, onDisconnect = {}, onForget = {}, onScan = {}, onClearScan = {},
                 onEnterIp = {}, onSettings = {}, onAbout = {},
             )
         }
