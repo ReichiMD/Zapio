@@ -79,8 +79,12 @@ fun DevicesScreen(
     }
 
     val connect = { address: TvAddress ->
-        openWhenConnected = true
-        tvs.connect(address)
+        if ((state as? ConnectionState.Connected)?.tv?.address == address) {
+            onOpenDevice()
+        } else {
+            openWhenConnected = true
+            tvs.connect(address)
+        }
     }
 
     DevicesContent(
@@ -120,7 +124,10 @@ fun DevicesScreen(
     when (val current = state) {
         is ConnectionState.Connecting -> ConnectingDialog(
             name = savedTvs.firstOrNull { it.address == current.address }?.title ?: current.address.host,
-            onCancel = tvs::cancelConnect,
+            onCancel = {
+                openWhenConnected = false
+                tvs.cancelConnect()
+            },
         )
         is ConnectionState.Failed -> ConnectFailedDialog(
             problem = current.problem,

@@ -14,22 +14,27 @@ import io.github.reichimd.zapio.adb.TvResult
 import io.github.reichimd.zapio.adb.TvScanner
 import io.github.reichimd.zapio.data.DeviceStore
 import io.github.reichimd.zapio.data.SavedTv
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
+import java.io.FilterInputStream
 import java.io.IOException
+import java.io.InputStream
 
 sealed interface ConnectionState {
     data object Idle : ConnectionState
@@ -65,9 +70,14 @@ sealed interface InstallFailure {
  */
 class TvManager(private val context: Context, private val store: DeviceStore) {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    // A bug in one job must not take the whole app down; each job reports its own failures.
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineExceptionHandler { _, _ -> })
     private val lock = Mutex()
+
+    // Read outside the lock too: closing it is the only way to free a read stuck on a dead TV.
+    @Volatile
     private var connection: TvConnection? = null
+    private var scanId = 0
     private var connectJob: Job? = null
     private var scanJob: Job? = null
     private var installJob: Job? = null
@@ -99,19 +109,31 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
         connectJob = scope.launch {
             lock.withLock {
                 closeConnection()
+                val tv = try {
+                    runInterruptible { TvConnection.connect(address, keys()) }
+                } catch (e: TvException) {
+                    _state.value = ConnectionState.Failed(address, e.problem)
+                    return@withLock
+                } catch (e: IOException) {
+                    // Key file unreadable or similar: nothing the TV did.
+                    _state.value = ConnectionState.Failed(address, TvProblem.CONNECTION_LOST)
+                    return@withLock
+                }
                 try {
-                    val tv = runInterruptible { TvConnection.connect(address, keys()) }
                     val name = try {
                         tv.deviceName()
                     } catch (e: TvException) {
                         null
                     }
+                    // Cancelled or replaced meanwhile: this connection is no longer wanted.
+                    ensureActive()
                     connection = tv
                     val saved = store.remember(address, name)
                     _ports.update { it + (saved.key to PortState.OPEN) }
                     _state.value = ConnectionState.Connected(saved)
-                } catch (e: TvException) {
-                    _state.value = ConnectionState.Failed(address, e.problem)
+                } catch (e: Throwable) {
+                    tv.close()
+                    throw e
                 }
             }
         }
@@ -130,7 +152,8 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
     fun disconnect() {
         connectJob?.cancel()
         installJob?.cancel()
-        scope.launch { lock.withLock { closeConnection() } }
+        // Not under the lock: closing also ends a running install that waits on a dead TV.
+        closeConnection()
         _state.value = ConnectionState.Idle
         _install.value = InstallState.Idle
     }
@@ -173,18 +196,23 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
             _scan.value = ScanState(finished = true, noWifi = true)
             return
         }
+        val id = ++scanId
         _scan.value = ScanState(running = true)
         scanJob = scope.launch {
             val hosts = TvScanner.hostsAround(network.ownIp, network.prefixLength)
             val found = runInterruptible {
-                TvScanner.scan(hosts) { address -> _scan.update { it.copy(found = it.found + address) } }
+                TvScanner.scan(hosts) { address ->
+                    // Probes of a cleared scan may still finish; their results are dropped.
+                    if (id == scanId) _scan.update { it.copy(found = it.found + address) }
+                }
             }
-            _scan.value = ScanState(finished = true, found = found)
+            if (id == scanId) _scan.value = ScanState(finished = true, found = found)
             checkSavedTvs()
         }
     }
 
     fun clearScan() {
+        scanId++
         scanJob?.cancel()
         _scan.value = ScanState()
     }
@@ -197,6 +225,7 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
     fun install(uri: Uri) {
         if (installJob?.isActive == true) return
         installJob = scope.launch {
+            val job = coroutineContext.job
             val fileName = displayName(uri)
             val size = fileSize(uri)
             if (size == null || size <= 0) {
@@ -211,12 +240,13 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                     return@withLock
                 }
                 _install.value = try {
-                    val input = context.contentResolver.openInputStream(uri) ?: throw IOException("no stream")
+                    val stream = context.contentResolver.openInputStream(uri) ?: throw IOException("no stream")
+                    val input = PhoneFileInputStream(stream)
                     var lastPercent = -1L
                     val result = runInterruptible {
                         tv.install(input, size) { sent ->
                             val percent = sent * 100 / size
-                            if (percent != lastPercent) {
+                            if (percent != lastPercent && job.isActive) {
                                 lastPercent = percent
                                 _install.value = if (sent >= size) {
                                     InstallState.Installing(fileName ?: "")
@@ -235,6 +265,8 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                     }
                 } catch (e: TvException) {
                     InstallState.Failed(fileName, InstallFailure.Connection(e.problem))
+                } catch (e: PhoneFileException) {
+                    InstallState.Failed(fileName, InstallFailure.FileUnreadable)
                 } catch (e: IOException) {
                     InstallState.Failed(fileName, InstallFailure.FileUnreadable)
                 } catch (e: SecurityException) {
@@ -247,8 +279,9 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
     private fun keys(): TvKeys = keys ?: TvKeys.loadOrCreate(privateKey, publicKey).also { keys = it }
 
     private fun closeConnection() {
-        connection?.close()
+        val old = connection
         connection = null
+        old?.close()
     }
 
     private fun displayName(uri: Uri): String? = query(uri, OpenableColumns.DISPLAY_NAME) { getString(it) }
@@ -263,6 +296,8 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
             null
         } catch (e: SecurityException) {
             null
+        } catch (e: IllegalArgumentException) {
+            null
         }
     }
 
@@ -273,5 +308,21 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
         }
     } catch (e: SecurityException) {
         null
+    } catch (e: IllegalArgumentException) {
+        null
+    }
+}
+
+/** A read error of the phone's file, kept apart from errors of the TV connection. */
+private class PhoneFileException(cause: IOException) : RuntimeException(cause)
+
+private class PhoneFileInputStream(input: InputStream) : FilterInputStream(input) {
+    override fun read(): Int = phoneFile { super.read() }
+    override fun read(b: ByteArray, off: Int, len: Int): Int = phoneFile { super.read(b, off, len) }
+
+    private inline fun <T> phoneFile(block: () -> T): T = try {
+        block()
+    } catch (e: IOException) {
+        throw PhoneFileException(e)
     }
 }

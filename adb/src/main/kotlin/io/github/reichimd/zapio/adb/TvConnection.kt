@@ -122,6 +122,12 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
 
         private const val CONNECT_TIMEOUT_MS = 5_000
 
+        /**
+         * Longest silence on a read before the connection counts as dead. Long enough for the TV
+         * to finish installing a large app; a later remote control must keep its shell busy.
+         */
+        private const val READ_TIMEOUT_MS = 120_000
+
         /** How long the TV's "Allow USB debugging?" prompt may stay unanswered. */
         const val APPROVAL_TIMEOUT_MS = 60_000L
 
@@ -130,7 +136,8 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
          *
          * On the first connection the TV asks whether to trust this phone; this waits up to
          * [approvalTimeoutMs] for the answer. The library cannot interrupt that wait, so on
-         * timeout or interrupt the half-open connection is left to close itself once the TV answers.
+         * timeout or interrupt the half-open connection is closed in the background once the TV
+         * answers or the read timeout ends it.
          */
         fun connect(
             address: TvAddress,
@@ -142,8 +149,7 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
                 PortState.CLOSED -> throw TvException(TvProblem.ADB_OFF)
                 PortState.NO_ANSWER -> throw TvException(TvProblem.NO_ANSWER)
             }
-            // No read timeout: later a remote control keeps a quiet shell open for a long time.
-            val dadb = Dadb.create(address.host, address.port, keys.keyPair, CONNECT_TIMEOUT_MS)
+            val dadb = Dadb.create(address.host, address.port, keys.keyPair, CONNECT_TIMEOUT_MS, READ_TIMEOUT_MS, keepAlive = true)
             val handshake = FutureTask { dadb.shell("true") }
             Thread(handshake, "zapio-connect").apply { isDaemon = true }.start()
             try {

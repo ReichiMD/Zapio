@@ -34,7 +34,9 @@ class DeviceStore(context: Context) {
         save()
     }
 
-    private fun load(): List<SavedTv> {
+    private fun load(): List<SavedTv> = runCatching { parse() }.getOrDefault(emptyList())
+
+    private fun parse(): List<SavedTv> {
         val json = JSONArray(prefs.getString(KEY, null) ?: return emptyList())
         return (0 until json.length()).mapNotNull { index ->
             val item = json.getJSONObject(index)
