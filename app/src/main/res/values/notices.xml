@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Names in the license screen. Proper names, so they are not translated. -->
+<resources>
+    <string name="source_url" translatable="false">https://github.com/ReichiMD/Zapio</string>
+
+    <string name="about_notice_line" translatable="false">%1$s · %2$s</string>
+
+    <string name="license_apache_2_0" translatable="false">Apache License 2.0</string>
+    <string name="license_ofl_1_1" translatable="false">SIL Open Font License 1.1</string>
+
+    <string name="notice_dadb_name" translatable="false">dadb</string>
+    <string name="notice_dadb_author" translatable="false">mobile.dev inc.</string>
+    <string name="notice_okio_name" translatable="false">Okio</string>
+    <string name="notice_okio_author" translatable="false">Square, Inc.</string>
+    <string name="notice_androidx_name" translatable="false">AndroidX and Jetpack Compose</string>
+    <string name="notice_androidx_author" translatable="false">The Android Open Source Project</string>
+    <string name="notice_kotlin_name" translatable="false">Kotlin and kotlinx.coroutines</string>
+    <string name="notice_kotlin_author" translatable="false">JetBrains s.r.o. and Kotlin contributors</string>
+    <string name="notice_space_grotesk_name" translatable="false">Space Grotesk</string>
+    <string name="notice_space_grotesk_author" translatable="false">The Space Grotesk Project Authors</string>
+</resources>

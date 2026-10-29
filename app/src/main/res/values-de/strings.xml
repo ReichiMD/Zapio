@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Geräte (Startbildschirm) -->
+    <string name="devices_about">Info und Lizenzen</string>
+    <string name="devices_empty_title">Noch keine TVs</string>
+    <string name="devices_empty_text">Gespeicherte TVs erscheinen hier. Bereite zuerst deinen TV vor, das dauert nur eine Minute.</string>
+    <string name="devices_prepare_title">TV vorbereiten</string>
+    <string name="devices_prepare_step_1">Öffne am TV die Einstellungen und suche die Geräte-Infos (oft „Info“ oder „Über“).</string>
+    <string name="devices_prepare_step_2">Klicke siebenmal auf die Build-Nummer, bis die Entwickleroptionen eingeschaltet sind.</string>
+    <string name="devices_prepare_step_3">Schalte in den Entwickleroptionen ADB-Debugging ein (manchmal Netzwerk-Debugging genannt).</string>
+    <string name="devices_prepare_step_4">Handy und TV müssen im selben WLAN sein.</string>
+    <string name="devices_prepare_hint">Mach das nur an deinem eigenen TV und in deinem Heimnetz, und schalte ADB-Debugging wieder aus, wenn du es nicht brauchst.</string>
+
+    <!-- Über und Lizenzen -->
+    <string name="about_title">Über Zapio</string>
+    <string name="about_back">Zurück</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_tagline">Apps installieren, Dateien übertragen und den TV vom Handy aus steuern.</string>
+    <string name="about_app_license">Zapio ist Open Source unter der Apache-Lizenz 2.0.</string>
+    <string name="about_source">Quellcode: %1$s</string>
+    <string name="about_licenses_title">Open-Source-Lizenzen</string>
+    <string name="about_licenses_text">Zapio nutzt diese Bibliotheken und Schriften. Tippe auf einen Eintrag, um die Lizenz zu lesen.</string>
+    <string name="about_show_license">Lizenz anzeigen</string>
+</resources>

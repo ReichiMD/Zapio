@@ -1,0 +1,13 @@
+<!-- The "z." word mark: amber letter with a dot, inside the 66 dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFB020"
+        android:pathData="M30,36h36v8l-24,22h24v8h-36v-8l24,-22h-24z" />
+    <path
+        android:fillColor="#FFFFB020"
+        android:pathData="M74,64a5,5 0,1 1,0 10a5,5 0,1 1,0 -10z" />
+</vector>
