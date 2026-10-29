@@ -2,6 +2,7 @@ package io.github.reichimd.zapio.adb
 
 import java.io.IOException
 import java.net.ConnectException
+import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.concurrent.Callable
@@ -77,6 +78,21 @@ object TvScanner {
             pool.shutdownNow()
             pool.awaitTermination(timeoutMs.toLong(), TimeUnit.MILLISECONDS)
         }
+    }
+
+    /**
+     * The name the home router knows for [host] (reverse DNS, usually from DHCP), without the
+     * network suffix; null if it has none. Blocks while asking the router.
+     */
+    fun nameOf(host: String): String? = try {
+        InetAddress.getByName(host).canonicalHostName
+            .takeIf { it != host }
+            ?.substringBefore('.')
+            ?.takeIf { it.isNotBlank() }
+    } catch (e: IOException) {
+        null
+    } catch (e: SecurityException) {
+        null
     }
 
     private fun parseIpv4(ip: String): Long? {

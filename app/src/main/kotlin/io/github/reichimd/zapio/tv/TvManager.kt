@@ -49,6 +49,8 @@ data class ScanState(
     val finished: Boolean = false,
     val noWifi: Boolean = false,
     val found: List<TvAddress> = emptyList(),
+    /** Names the router knows for found addresses; they arrive after the search. */
+    val names: Map<TvAddress, String> = emptyMap(),
 )
 
 sealed interface InstallState {
@@ -61,7 +63,7 @@ sealed interface InstallState {
 
 sealed interface InstallFailure {
     data object FileUnreadable : InstallFailure
-    data class Connection(val problem: TvProblem) : InstallFailure
+    data class Connection(val problem: TvProblem, val detail: String? = null) : InstallFailure
     data class Rejected(val problem: InstallProblem, val tvText: String) : InstallFailure
 }
 
@@ -223,6 +225,12 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
             }
             if (id == scanId) _scan.value = ScanState(finished = true, found = found)
             checkSavedTvs()
+            found.forEach { address ->
+                launch {
+                    val name = TvScanner.nameOf(address.host) ?: return@launch
+                    if (id == scanId) _scan.update { it.copy(names = it.names + (address to name)) }
+                }
+            }
         }
     }
 
@@ -255,6 +263,8 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                     return@withLock
                 }
                 val outcome = try {
+                    // The TV may have dropped a connection that sat unused for a while.
+                    runInterruptible { tv.ensureConnected() }
                     val stream = context.contentResolver.openInputStream(uri) ?: throw IOException("no stream")
                     val input = PhoneFileInputStream(stream)
                     var lastPercent = -1L
@@ -279,7 +289,7 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                         )
                     }
                 } catch (e: TvException) {
-                    InstallState.Failed(fileName, InstallFailure.Connection(e.problem))
+                    InstallState.Failed(fileName, InstallFailure.Connection(e.problem, e.detail))
                 } catch (e: PhoneFileException) {
                     InstallState.Failed(fileName, InstallFailure.FileUnreadable)
                 } catch (e: IOException) {
@@ -289,7 +299,7 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    InstallState.Failed(fileName, InstallFailure.Connection(TvProblem.CONNECTION_LOST))
+                    InstallState.Failed(fileName, InstallFailure.Connection(TvProblem.CONNECTION_LOST, e.toString()))
                 }
                 // After a disconnect the screen is gone; do not bring back an old result.
                 if (job.isActive) _install.value = outcome

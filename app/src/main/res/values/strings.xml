@@ -28,6 +28,7 @@
     <string name="devices_scan_found_title">Found in your Wi-Fi</string>
     <string name="devices_scan_running">Searching your Wi-Fi…</string>
     <string name="devices_scan_new">New, tap to connect</string>
+    <string name="devices_scan_new_at">%1$s · new, tap to connect</string>
     <string name="devices_scan_none">No TV with ADB debugging found. Is the TV on and ADB debugging turned on? You can also enter the IP address.</string>
     <string name="devices_scan_only_known">Only TVs that are already in your list.</string>
     <string name="devices_scan_no_wifi">The phone is not in a Wi-Fi network. Connect it to the same Wi-Fi as the TV.</string>
@@ -82,6 +83,7 @@
     <string name="install_problem_blocked">The TV blocked the installation.</string>
     <string name="install_problem_other">The TV refused the app.</string>
     <string name="install_tv_says">The TV says: %1$s</string>
+    <string name="install_detail">Details: %1$s</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

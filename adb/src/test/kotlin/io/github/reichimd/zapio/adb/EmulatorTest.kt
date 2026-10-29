@@ -80,6 +80,13 @@ class EmulatorTest {
     }
 
     @Test
+    fun reconnectsAfterDroppedConnection() {
+        tv.close()
+        tv.ensureConnected()
+        assertEquals("zapio", tv.shell("echo zapio").output.trim())
+    }
+
+    @Test
     fun knowsItsName() {
         assertTrue(!tv.deviceName().isNullOrBlank())
     }

@@ -18,4 +18,8 @@ enum class TvProblem {
 }
 
 class TvException(val problem: TvProblem, cause: Throwable? = null) :
-    IOException("TV problem: $problem", cause)
+    IOException("TV problem: $problem", cause) {
+
+    /** The technical reason, for a small detail line under the explanation. */
+    val detail: String? get() = cause?.let { it.message ?: it.javaClass.simpleName }
+}

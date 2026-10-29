@@ -35,7 +35,7 @@ sealed interface TvResult {
  *
  * Connection faults come out as [TvException] with a [TvProblem].
  */
-class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
+class TvConnection private constructor(private val dadb: Dadb, val address: TvAddress) : AutoCloseable {
 
     fun shell(command: String): ShellResult = guard {
         val response = dadb.shell(command)
@@ -91,6 +91,44 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
         }
     }
 
+    /**
+     * Checks the connection and quietly opens a new one if the TV dropped the old one,
+     * for example after some minutes without use. The TV already trusts the key, so it does not ask again.
+     */
+    fun ensureConnected() {
+        if (answersWithin(QUICK_CHECK_MS)) return
+        if (answersWithin(APPROVAL_TIMEOUT_MS)) return
+        throw TvException(
+            when (TvScanner.probe(address)) {
+                PortState.CLOSED -> TvProblem.ADB_OFF
+                PortState.NO_ANSWER -> TvProblem.NO_ANSWER
+                PortState.OPEN -> TvProblem.CONNECTION_LOST
+            },
+        )
+    }
+
+    /**
+     * Runs a no-op command with a time limit. A connection that died silently would otherwise
+     * wait out the whole read timeout; closing it frees the waiting read and the next call starts fresh.
+     */
+    private fun answersWithin(timeoutMs: Long): Boolean {
+        val check = FutureTask { dadb.shell("true") }
+        Thread(check, "zapio-check").apply { isDaemon = true }.start()
+        return try {
+            check.get(timeoutMs, TimeUnit.MILLISECONDS)
+            true
+        } catch (e: TimeoutException) {
+            dadb.close()
+            false
+        } catch (e: ExecutionException) {
+            dadb.close()
+            false
+        } catch (e: InterruptedException) {
+            dadb.close()
+            throw e
+        }
+    }
+
     /** The name the TV shows for itself, or its model if it has none. */
     fun deviceName(): String? {
         val name = shell("settings get global device_name").output.trim()
@@ -112,6 +150,8 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
     } catch (e: TvException) {
         throw e
     } catch (e: IOException) {
+        // The library keeps using a connection the TV has dropped; closing it makes the next call open a new one.
+        dadb.close()
         val timedOut = e is AdbTimeoutException || e is SocketTimeoutException || e.cause is SocketTimeoutException
         throw TvException(if (timedOut) TvProblem.NO_ANSWER else TvProblem.CONNECTION_LOST, e)
     }
@@ -127,6 +167,9 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
          * TV to finish installing a large app; a later remote control must keep its shell busy.
          */
         private const val READ_TIMEOUT_MS = 300_000
+
+        /** A healthy connection answers a no-op command well within this. */
+        private const val QUICK_CHECK_MS = 5_000L
 
         /** How long the TV's "Allow USB debugging?" prompt may stay unanswered. */
         const val APPROVAL_TIMEOUT_MS = 60_000L
@@ -164,7 +207,7 @@ class TvConnection private constructor(private val dadb: Dadb) : AutoCloseable {
                 closeWhenDone(handshake, dadb)
                 throw e
             }
-            return TvConnection(dadb)
+            return TvConnection(dadb, address)
         }
 
         /** The port was open, so a failing handshake almost always means the TV said no. */
