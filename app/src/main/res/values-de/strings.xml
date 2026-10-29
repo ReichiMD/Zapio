@@ -26,6 +26,7 @@
     <string name="devices_scan_found_title">Im WLAN gefunden</string>
     <string name="devices_scan_running">Suche im WLAN …</string>
     <string name="devices_scan_new">Neu, tippen zum Verbinden</string>
+    <string name="devices_scan_new_at">%1$s · neu, tippen zum Verbinden</string>
     <string name="devices_scan_none">Kein TV mit ADB-Debugging gefunden. Ist der TV an und ADB-Debugging eingeschaltet? Du kannst die IP-Adresse auch eingeben.</string>
     <string name="devices_scan_only_known">Nur TVs, die schon in deiner Liste sind.</string>
     <string name="devices_scan_no_wifi">Das Handy ist in keinem WLAN. Verbinde es mit demselben WLAN wie den TV.</string>
@@ -80,6 +81,7 @@
     <string name="install_problem_blocked">Der TV hat die Installation blockiert.</string>
     <string name="install_problem_other">Der TV hat die App abgelehnt.</string>
     <string name="install_tv_says">Der TV meldet: %1$s</string>
+    <string name="install_detail">Details: %1$s</string>
 
     <!-- Einstellungen -->
     <string name="settings_title">Einstellungen</string>

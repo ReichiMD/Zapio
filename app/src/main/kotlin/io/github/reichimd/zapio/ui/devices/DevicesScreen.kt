@@ -250,9 +250,14 @@ private fun ScanSection(
                 }
             }
             newOnes.forEach { address ->
+                val name = scan.names[address]
                 TvRow(
-                    title = address.host,
-                    subtitle = stringResource(R.string.devices_scan_new),
+                    title = name ?: address.host,
+                    subtitle = if (name != null) {
+                        stringResource(R.string.devices_scan_new_at, address.host)
+                    } else {
+                        stringResource(R.string.devices_scan_new)
+                    },
                     onClick = { onConnect(address) },
                 )
             }

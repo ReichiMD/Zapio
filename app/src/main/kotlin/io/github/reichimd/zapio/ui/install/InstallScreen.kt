@@ -133,16 +133,13 @@ private fun Failure(state: InstallState.Failed) {
     state.fileName?.let { Body(it) }
     when (val reason = state.reason) {
         InstallFailure.FileUnreadable -> Body(stringResource(R.string.install_file_unreadable))
-        is InstallFailure.Connection -> Body(stringResource(problemText(reason.problem)))
+        is InstallFailure.Connection -> {
+            Body(stringResource(problemText(reason.problem)))
+            reason.detail?.let { Detail(stringResource(R.string.install_detail, it)) }
+        }
         is InstallFailure.Rejected -> {
             Body(stringResource(installProblemText(reason.problem)))
-            if (reason.tvText.isNotBlank()) {
-                Text(
-                    stringResource(R.string.install_tv_says, reason.tvText),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = ZapioColors.TextMuted,
-                )
-            }
+            if (reason.tvText.isNotBlank()) Detail(stringResource(R.string.install_tv_says, reason.tvText))
         }
     }
 }
@@ -153,6 +150,11 @@ private fun Outcome(@DrawableRes icon: Int, color: Color, text: String) {
         Icon(painterResource(icon), contentDescription = null, tint = color, modifier = Modifier.size(28.dp))
         Text(text, style = MaterialTheme.typography.titleLarge)
     }
+}
+
+@Composable
+private fun Detail(text: String) {
+    Text(text, style = MaterialTheme.typography.bodySmall, color = ZapioColors.TextMuted)
 }
 
 @Composable
