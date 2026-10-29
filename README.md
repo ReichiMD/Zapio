@@ -4,7 +4,7 @@ Android app for controlling Android TV devices on your own home network over ADB
 install APKs, browse and transfer files, run shell commands, take screenshots and
 screen recordings, and use your phone as a remote control with text input.
 
-**Status:** early development. The app starts and shows its first screens; connecting to a TV comes next.
+**Status:** early development. The app finds TVs in your Wi-Fi, connects to them and installs APKs. The remote control comes next.
 
 ## Planned features
 

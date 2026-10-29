@@ -2,10 +2,35 @@
 <resources>
     <string name="app_name" translatable="false">Zapio</string>
 
+    <!-- Shared -->
+    <string name="common_back">Back</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_close">Close</string>
+
     <!-- Devices (start screen) -->
     <string name="devices_about">About and licenses</string>
     <string name="devices_empty_title">No TVs yet</string>
-    <string name="devices_empty_text">Saved TVs will show up here. Get your TV ready first, it only takes a minute.</string>
+    <string name="devices_empty_text">Search your Wi-Fi or enter the TV’s IP address. Get your TV ready first, it only takes a minute.</string>
+    <string name="devices_active_title">Connected TV</string>
+    <string name="devices_all_tools">All tools</string>
+    <string name="devices_saved_title">Your TVs</string>
+    <string name="devices_status_connected">Connected</string>
+    <string name="devices_status_ready">Ready, tap to connect</string>
+    <string name="devices_status_adb_off">ADB debugging is off</string>
+    <string name="devices_status_offline">Not reachable</string>
+    <string name="devices_status_checking">Checking…</string>
+    <string name="devices_forget">Remove %1$s</string>
+    <string name="devices_forget_title">Remove this TV?</string>
+    <string name="devices_forget_text">%1$s disappears from the list. You can add it again any time.</string>
+    <string name="devices_forget_confirm">Remove</string>
+    <string name="devices_scan">Search Wi-Fi</string>
+    <string name="devices_enter_ip">Enter IP</string>
+    <string name="devices_scan_found_title">Found in your Wi-Fi</string>
+    <string name="devices_scan_running">Searching your Wi-Fi…</string>
+    <string name="devices_scan_new">New, tap to connect</string>
+    <string name="devices_scan_none">No TV with ADB debugging found. Is the TV on and ADB debugging turned on? You can also enter the IP address.</string>
+    <string name="devices_scan_only_known">Only TVs that are already in your list.</string>
+    <string name="devices_scan_no_wifi">The phone is not in a Wi-Fi network. Connect it to the same Wi-Fi as the TV.</string>
     <string name="devices_prepare_title">Get your TV ready</string>
     <string name="devices_prepare_step_1">On the TV, open Settings and find the device info page (often called “About”).</string>
     <string name="devices_prepare_step_2">Select the build number seven times until developer options are turned on.</string>
@@ -13,9 +38,65 @@
     <string name="devices_prepare_step_4">Keep the phone and the TV on the same Wi-Fi.</string>
     <string name="devices_prepare_hint">Only do this on your own TV and home network, and turn ADB debugging off again when you don’t need it.</string>
 
+    <!-- Adding and connecting a TV -->
+    <string name="ip_title">Enter IP address</string>
+    <string name="ip_text">The TV shows its IP address in its settings, usually under Network or About.</string>
+    <string name="ip_label">IP address</string>
+    <string name="ip_invalid">That is not an IP address. It looks like four numbers with dots, for example 192.168.0.10.</string>
+    <string name="ip_connect">Connect</string>
+    <string name="connect_title">Connecting to %1$s</string>
+    <string name="connect_text">If the TV asks “Allow USB debugging?”, tick “Always allow from this computer” and choose OK.</string>
+    <string name="connect_failed_title">Could not connect</string>
+    <string name="connect_retry">Try again</string>
+    <string name="problem_adb_off">The TV answers, but ADB debugging is off. Turn it on in the TV’s developer options.</string>
+    <string name="problem_no_answer">The TV does not answer. Is it switched on and in the same Wi-Fi as the phone? Check the IP address too.</string>
+    <string name="problem_not_allowed">The TV did not allow the connection. Look at the TV screen: tick “Always allow from this computer”, choose OK and try again.</string>
+    <string name="problem_connection_lost">The connection to the TV broke off. Try again.</string>
+
+    <!-- Connected TV -->
+    <string name="device_tools">Tools</string>
+    <string name="device_install">Install app</string>
+    <string name="device_install_text">Send an APK from your phone to the TV</string>
+    <string name="device_more_soon">Remote control, files and more come in the next versions.</string>
+    <string name="device_disconnect">Disconnect</string>
+    <string name="device_adb_hint">When you are done, turn ADB debugging off again on the TV.</string>
+
+    <!-- Installing an APK -->
+    <string name="install_intro">Choose an APK file on your phone. Zapio sends it to the TV and installs it there.</string>
+    <string name="install_choose">Choose APK</string>
+    <string name="install_another">Choose another APK</string>
+    <string name="install_progress">%1$s of %2$s sent</string>
+    <string name="install_installing">Installing on the TV. This can take a minute.</string>
+    <string name="install_keep_open">You can leave this screen, the installation keeps running.</string>
+    <string name="install_done_title">Installed</string>
+    <string name="install_done">%1$s is on the TV now. You find it in the TV’s list of apps.</string>
+    <string name="install_failed">Not installed</string>
+    <string name="install_file_unreadable">The file could not be read. Choose it again or pick another one.</string>
+    <string name="install_problem_not_an_apk">This is not a working APK file. It may be broken or incomplete, download it again.</string>
+    <string name="install_problem_no_space">The TV does not have enough free space. Remove apps or files on the TV and try again.</string>
+    <string name="install_problem_signature">This app is already on the TV, but from a different source. Uninstall it on the TV first.</string>
+    <string name="install_problem_older_version">The TV already has a newer version of this app.</string>
+    <string name="install_problem_tv_too_old">This app needs a newer Android version than the TV has.</string>
+    <string name="install_problem_app_too_old">This app is too old for the TV’s Android version.</string>
+    <string name="install_problem_wrong_processor">This APK is made for a different processor type. Look for the version for your TV (often called armeabi-v7a or arm64-v8a).</string>
+    <string name="install_problem_blocked">The TV blocked the installation.</string>
+    <string name="install_problem_other">The TV refused the app.</string>
+    <string name="install_tv_says">The TV says: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">Phone language</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="settings_key_title">Connection key</string>
+    <string name="settings_key_text">Zapio shows your TVs a key that never leaves this phone. With a new key, every TV asks again whether to allow this phone.</string>
+    <string name="settings_key_new">Create new key</string>
+    <string name="settings_key_confirm_title">Create a new key?</string>
+    <string name="settings_key_confirm_text">The connection closes and every TV asks again. On the TV you can remove the old permission under developer options, “Revoke USB debugging authorizations”.</string>
+
     <!-- About and licenses -->
     <string name="about_title">About</string>
-    <string name="about_back">Back</string>
     <string name="about_version">Version %1$s</string>
     <string name="about_tagline">Install apps, move files and control your TV from your phone.</string>
     <string name="about_app_license">Zapio is open source under the Apache License 2.0.</string>

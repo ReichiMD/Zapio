@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -13,8 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Surface
@@ -137,4 +143,113 @@ fun IconTile(@DrawableRes icon: Int, tint: Color = ZapioColors.Accent, size: Int
             )
         }
     }
+}
+
+/** Main action: amber pill. */
+@Composable
+fun PrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int? = null,
+    enabled: Boolean = true,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.heightIn(min = 52.dp),
+        enabled = enabled,
+        shape = CircleShape,
+        contentPadding = PaddingValues(horizontal = 22.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = ZapioColors.Accent,
+            contentColor = ZapioColors.OnAccent,
+            disabledContainerColor = ZapioColors.Surface2,
+            disabledContentColor = ZapioColors.TextMuted,
+        ),
+    ) { ButtonContent(text, icon) }
+}
+
+/** Second action: outlined pill; [danger] colors it for disconnecting or deleting. */
+@Composable
+fun SecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int? = null,
+    danger: Boolean = false,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.heightIn(min = 52.dp),
+        shape = CircleShape,
+        contentPadding = PaddingValues(horizontal = 22.dp),
+        border = BorderStroke(1.dp, if (danger) ZapioColors.Danger else ZapioColors.Line),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = ZapioColors.Surface,
+            contentColor = if (danger) ZapioColors.Danger else ZapioColors.Text,
+        ),
+    ) { ButtonContent(text, icon) }
+}
+
+@Composable
+private fun ButtonContent(text: String, @DrawableRes icon: Int?) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (icon != null) Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(20.dp))
+        Text(text, style = MaterialTheme.typography.labelLarge)
+    }
+}
+
+/** Small colored dot with a status word next to it. */
+@Composable
+fun StatusLine(text: String, color: Color, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Surface(modifier = Modifier.size(8.dp), shape = CircleShape, color = color) {}
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = color)
+    }
+}
+
+/** Dialog in the app's colors. Without [dismissText] there is only one button. */
+@Composable
+fun ZapioDialog(
+    title: String,
+    confirmText: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    dismissText: String? = null,
+    content: @Composable () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = ZapioColors.Surface,
+        titleContentColor = ZapioColors.Text,
+        textContentColor = ZapioColors.TextMuted,
+        shape = RoundedCornerShape(24.dp),
+        title = { Text(title, style = MaterialTheme.typography.titleLarge) },
+        text = content,
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(confirmText, color = ZapioColors.Accent, style = MaterialTheme.typography.labelLarge)
+            }
+        },
+        dismissButton = dismissText?.let {
+            {
+                TextButton(onClick = onDismiss) {
+                    Text(it, color = ZapioColors.TextMuted, style = MaterialTheme.typography.labelLarge)
+                }
+            }
+        },
+    )
+}
+
+@Composable
+fun BackButton(onBack: () -> Unit) {
+    RoundIconButton(
+        icon = R.drawable.ic_arrow_back,
+        contentDescription = stringResource(R.string.common_back),
+        onClick = onBack,
+    )
 }

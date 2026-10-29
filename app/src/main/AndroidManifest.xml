@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- ADB talks to the TV over the home network. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- To find the phone's own address in the Wi-Fi for "Search Wi-Fi". -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
+        android:name=".ZapioApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
