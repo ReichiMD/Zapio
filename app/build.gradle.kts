@@ -18,7 +18,8 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = buildNumber
-        versionName = "0.0.$buildNumber"
+        // CI adds "-test" for pre-releases built from pull requests.
+        versionName = "0.0.$buildNumber" + (System.getenv("ZAPIO_VERSION_SUFFIX") ?: "")
     }
 
     signingConfigs {

@@ -28,7 +28,8 @@ Signed APKs are published under [Releases](../../releases). Each new release ins
 The project has two parts: `adb` (plain Kotlin, everything that talks to the TV, built on
 [dadb](https://github.com/mobile-dev-inc/dadb)) and `app` (the Android app, Jetpack Compose).
 GitHub Actions builds every change, runs lint and tests, and runs the `adb` part against an
-Android emulator. Pushes to `main` publish a signed release.
+Android emulator. Pushes to `main` publish a signed release; pull requests publish a signed
+test pre-release that installs over the app, so changes can be tried before merging.
 
 ## Requirements on the TV
 

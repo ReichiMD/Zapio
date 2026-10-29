@@ -76,14 +76,25 @@ jobs:
           script: ./gradlew --stacktrace :adb:test --rerun --tests "io.github.reichimd.zapio.adb.EmulatorTest"
 
   release:
+    # Pushes to main publish the release. Pull requests from this repo publish a test
+    # pre-release signed with the same key, so it installs over the app for testing
+    # before merging. Pull requests from forks and Dependabot get no secrets and skip this job.
     name: Signed release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository &&
+       github.actor != 'dependabot[bot]')
     needs: [build, emulator]
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      IS_TEST: ${{ github.event_name == 'pull_request' }}
     steps:
+      # For pull requests build the branch's own commit, the one the test tag points at.
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -104,12 +115,32 @@ jobs:
           ZAPIO_KEYSTORE_PASSWORD: ${{ secrets.ZAPIO_KEYSTORE_PASSWORD }}
           ZAPIO_KEY_ALIAS: ${{ secrets.ZAPIO_KEY_ALIAS }}
           ZAPIO_KEY_PASSWORD: ${{ secrets.ZAPIO_KEY_PASSWORD }}
+          ZAPIO_VERSION_SUFFIX: ${{ github.event_name == 'pull_request' && '-test' || '' }}
         run: ./gradlew --stacktrace assembleRelease
       - name: Check signature
         run: |
           APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
           "$APKSIGNER" verify --print-certs app/build/outputs/apk/release/app-release.apk
+      - name: Publish test pre-release
+        if: env.IS_TEST == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          VERSION="0.0.${GITHUB_RUN_NUMBER}-test"
+          cp app/build/outputs/apk/release/app-release.apk "zapio-${VERSION}.apk"
+          if gh release view "v${VERSION}" > /dev/null 2>&1; then
+            gh release upload "v${VERSION}" "zapio-${VERSION}.apk" --clobber
+          else
+            gh release create "v${VERSION}" "zapio-${VERSION}.apk" \
+              --prerelease \
+              --target "$HEAD_SHA" \
+              --title "Zapio ${VERSION} (test for PR #${PR_NUMBER})" \
+              --notes "Test build of pull request #${PR_NUMBER} (${HEAD_SHA::7}). Installs over the app. Not merged yet."
+          fi
       - name: Publish release
+        if: env.IS_TEST != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -124,6 +155,10 @@ jobs:
               --title "Zapio ${VERSION}" \
               --notes "Built from ${GITHUB_SHA::7}. Download the APK on your phone and install it."
           fi
+          # Test pre-releases are done once a real release is out.
+          gh release list --limit 100 --json tagName,isPrerelease \
+            --jq '.[] | select(.isPrerelease and (.tagName | endswith("-test"))) | .tagName' |
+            while read -r TAG; do gh release delete "$TAG" --yes --cleanup-tag; done
       - name: Remove signing key
         if: always()
         run: rm -f "$RUNNER_TEMP/zapio.keystore"
