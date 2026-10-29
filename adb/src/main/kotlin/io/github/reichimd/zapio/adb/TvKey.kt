@@ -12,6 +12,9 @@ enum class TvKey(val code: Int) {
     VOLUME_UP(24),
     VOLUME_DOWN(25),
     POWER(26),
+    ENTER(66),
+    DEL(67),
     MENU(82),
+    MEDIA_PLAY_PAUSE(85),
     VOLUME_MUTE(164),
 }

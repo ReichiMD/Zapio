@@ -28,6 +28,7 @@ import io.github.reichimd.zapio.ui.about.ThirdPartyNotice
 import io.github.reichimd.zapio.ui.device.DeviceScreen
 import io.github.reichimd.zapio.ui.devices.DevicesScreen
 import io.github.reichimd.zapio.ui.install.InstallScreen
+import io.github.reichimd.zapio.ui.remote.RemoteScreen
 import io.github.reichimd.zapio.ui.settings.SettingsScreen
 import io.github.reichimd.zapio.ui.theme.ZapioColors
 import io.github.reichimd.zapio.ui.theme.ZapioTheme
@@ -72,12 +73,13 @@ class MainActivity : ComponentActivity() {
 private const val DEVICES = "devices"
 private const val DEVICE = "device"
 private const val INSTALL = "install"
+private const val REMOTE = "remote"
 private const val SETTINGS = "settings"
 private const val ABOUT = "about"
 private const val LICENSE_PREFIX = "license:"
 
 /** Screens that need a connected TV. */
-private val NEEDS_TV = setOf(DEVICE, INSTALL)
+private val NEEDS_TV = setOf(DEVICE, INSTALL, REMOTE)
 
 @Composable
 private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (AppLanguage) -> Unit) {
@@ -100,6 +102,7 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
             tvs = app.tvs,
             savedTvs = savedTvs,
             onOpenDevice = { open(DEVICE) },
+            onOpenRemote = { open(REMOTE) },
             onSettings = { open(SETTINGS) },
             onAbout = { open(ABOUT) },
         )
@@ -108,10 +111,14 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
                 tv = connected.tv,
                 onBack = back,
                 onInstall = { open(INSTALL) },
+                onRemote = { open(REMOTE) },
                 onDisconnect = app.tvs::disconnect,
             )
         }
         current == INSTALL -> InstallScreen(tvs = app.tvs, onBack = back)
+        current == REMOTE -> (state as? ConnectionState.Connected)?.let { connected ->
+            RemoteScreen(title = connected.tv.title, tvs = app.tvs, onBack = back)
+        }
         current == SETTINGS -> SettingsScreen(
             language = language,
             onLanguage = onLanguage,

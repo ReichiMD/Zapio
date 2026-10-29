@@ -73,7 +73,7 @@ sealed interface InstallFailure {
 }
 
 /**
- * Everything the app does with TVs: one connection at a time, network search, installing.
+ * Everything the app does with TVs: one connection at a time, network search, installing, remote control.
  * Lives as long as the app process, so an install keeps running when its screen is left.
  */
 class TvManager(private val context: Context, private val store: DeviceStore) {
@@ -109,6 +109,15 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
 
     private val _install = MutableStateFlow<InstallState>(InstallState.Idle)
     val install: StateFlow<InstallState> = _install.asStateFlow()
+
+    /** Runs only while its screen is open; it does not wait for [lock], so keys work during an install. */
+    val remote = RemoteControl(scope)
+
+    fun startRemote() {
+        connection?.let(remote::start)
+    }
+
+    fun stopRemote() = remote.stop()
 
     fun connect(address: TvAddress) {
         val current = _state.value
@@ -324,6 +333,7 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
     private fun keys(): TvKeys = keys ?: TvKeys.loadOrCreate(privateKey, publicKey).also { keys = it }
 
     private fun closeConnection() {
+        remote.stop()
         val old = connection
         connection = null
         old?.close()
