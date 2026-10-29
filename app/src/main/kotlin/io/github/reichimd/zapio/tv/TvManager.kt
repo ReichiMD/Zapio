@@ -111,18 +111,23 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
         connectJob = scope.launch {
             lock.withLock {
                 closeConnection()
+                val ownKeys = try {
+                    keys()
+                } catch (e: Exception) {
+                    // Key files broken: only then start over with a fresh key next time.
+                    privateKey.delete()
+                    publicKey.delete()
+                    _state.value = ConnectionState.Failed(address, TvProblem.CONNECTION_LOST)
+                    return@withLock
+                }
                 val tv = try {
-                    runInterruptible { TvConnection.connect(address, keys()) }
+                    runInterruptible { TvConnection.connect(address, ownKeys) }
                 } catch (e: TvException) {
                     _state.value = ConnectionState.Failed(address, e.problem)
                     return@withLock
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    // Key file unreadable or similar: nothing the TV did. A fresh key next time.
-                    keys = null
-                    privateKey.delete()
-                    publicKey.delete()
                     _state.value = ConnectionState.Failed(address, TvProblem.CONNECTION_LOST)
                     return@withLock
                 }
