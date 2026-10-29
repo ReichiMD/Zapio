@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.reichimd.zapio.BuildConfig
 import io.github.reichimd.zapio.R
+import io.github.reichimd.zapio.ui.common.BackButton
 import io.github.reichimd.zapio.ui.common.IconTile
-import io.github.reichimd.zapio.ui.common.RoundIconButton
 import io.github.reichimd.zapio.ui.common.SectionLabel
 import io.github.reichimd.zapio.ui.common.TopBar
 import io.github.reichimd.zapio.ui.common.WordMark
@@ -161,15 +161,6 @@ fun LicenseScreen(notice: ThirdPartyNotice, onBack: () -> Unit) {
             }
         }
     }
-}
-
-@Composable
-private fun BackButton(onBack: () -> Unit) {
-    RoundIconButton(
-        icon = R.drawable.ic_arrow_back,
-        contentDescription = stringResource(R.string.about_back),
-        onClick = onBack,
-    )
 }
 
 @Preview(widthDp = 390, heightDp = 844)

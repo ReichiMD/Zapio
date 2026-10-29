@@ -62,7 +62,9 @@ class EmulatorTest {
     @Test
     fun installsApk() {
         val apk = File(requireNotNull(System.getenv("ZAPIO_TEST_APK")) { "ZAPIO_TEST_APK not set" })
-        assertEquals(TvResult.Success, tv.install(apk.inputStream(), apk.length()))
+        var sent = 0L
+        assertEquals(TvResult.Success, tv.install(apk.inputStream(), apk.length()) { sent = it })
+        assertEquals(apk.length(), sent)
         val packages = tv.shell("pm list packages io.github.reichimd.zapio").output
         assertTrue(packages, packages.contains("package:io.github.reichimd.zapio"))
         tv.shell("pm uninstall io.github.reichimd.zapio")
@@ -72,7 +74,14 @@ class EmulatorTest {
     fun brokenApkReportsReason() {
         val junk = ByteArray(1024) { 7 }
         val result = tv.install(junk.inputStream(), junk.size.toLong())
-        assertTrue(result is TvResult.Failure && result.reason.isNotBlank())
+        assertTrue(result is TvResult.Failure)
+        val reason = (result as TvResult.Failure).reason
+        assertEquals(reason, InstallProblem.NOT_AN_APK, InstallProblem.of(reason))
+    }
+
+    @Test
+    fun knowsItsName() {
+        assertTrue(!tv.deviceName().isNullOrBlank())
     }
 
     @Test
