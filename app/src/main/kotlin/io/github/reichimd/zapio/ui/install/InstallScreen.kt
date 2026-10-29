@@ -139,6 +139,9 @@ private fun Failure(state: InstallState.Failed) {
         }
         is InstallFailure.Rejected -> {
             Body(stringResource(installProblemText(reason.problem)))
+            if (reason.tvCpuTypes.isNotEmpty()) {
+                Body(stringResource(R.string.install_tv_cpu, reason.tvCpuTypes.joinToString(", ")))
+            }
             if (reason.tvText.isNotBlank()) Detail(stringResource(R.string.install_tv_says, reason.tvText))
         }
     }

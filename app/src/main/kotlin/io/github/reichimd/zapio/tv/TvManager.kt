@@ -64,7 +64,12 @@ sealed interface InstallState {
 sealed interface InstallFailure {
     data object FileUnreadable : InstallFailure
     data class Connection(val problem: TvProblem, val detail: String? = null) : InstallFailure
-    data class Rejected(val problem: InstallProblem, val tvText: String) : InstallFailure
+    /** [tvCpuTypes] is only filled when the APK is made for another processor. */
+    data class Rejected(
+        val problem: InstallProblem,
+        val tvText: String,
+        val tvCpuTypes: List<String> = emptyList(),
+    ) : InstallFailure
 }
 
 /**
@@ -283,10 +288,19 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                     }
                     when (result) {
                         TvResult.Success -> InstallState.Done(fileName ?: "")
-                        is TvResult.Failure -> InstallState.Failed(
-                            fileName,
-                            InstallFailure.Rejected(InstallProblem.of(result.reason), result.reason),
-                        )
+                        is TvResult.Failure -> {
+                            val problem = InstallProblem.of(result.reason)
+                            val cpuTypes = if (problem == InstallProblem.WRONG_PROCESSOR) {
+                                try {
+                                    runInterruptible { tv.cpuTypes() }
+                                } catch (e: TvException) {
+                                    emptyList()
+                                }
+                            } else {
+                                emptyList()
+                            }
+                            InstallState.Failed(fileName, InstallFailure.Rejected(problem, result.reason, cpuTypes))
+                        }
                     }
                 } catch (e: TvException) {
                     InstallState.Failed(fileName, InstallFailure.Connection(e.problem, e.detail))

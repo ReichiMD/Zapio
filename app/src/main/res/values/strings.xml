@@ -83,6 +83,7 @@
     <string name="install_problem_blocked">The TV blocked the installation.</string>
     <string name="install_problem_other">The TV refused the app.</string>
     <string name="install_tv_says">The TV says: %1$s</string>
+    <string name="install_tv_cpu">Your TV takes: %1$s</string>
     <string name="install_detail">Details: %1$s</string>
 
     <!-- Settings -->
