@@ -23,12 +23,16 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -253,3 +257,29 @@ fun BackButton(onBack: () -> Unit) {
         onClick = onBack,
     )
 }
+
+/** Keeps the phone screen on while [active], so a long copy or recording is not cut short. */
+@Composable
+fun KeepScreenOn(active: Boolean) {
+    val view = LocalView.current
+    DisposableEffect(view, active) {
+        view.keepScreenOn = active
+        onDispose { view.keepScreenOn = false }
+    }
+}
+
+/** Colors for text fields in dialogs. */
+@Composable
+fun zapioTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = ZapioColors.Text,
+    unfocusedTextColor = ZapioColors.Text,
+    focusedBorderColor = ZapioColors.Accent,
+    unfocusedBorderColor = ZapioColors.Line,
+    focusedLabelColor = ZapioColors.Accent,
+    unfocusedLabelColor = ZapioColors.TextMuted,
+    cursorColor = ZapioColors.Accent,
+    errorBorderColor = ZapioColors.Danger,
+    errorLabelColor = ZapioColors.Danger,
+    errorSupportingTextColor = ZapioColors.Danger,
+    errorTextColor = ZapioColors.Text,
+)

@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +26,7 @@ import io.github.reichimd.zapio.adb.TvAddress
 import io.github.reichimd.zapio.adb.TvProblem
 import io.github.reichimd.zapio.data.SavedTv
 import io.github.reichimd.zapio.ui.common.ZapioDialog
+import io.github.reichimd.zapio.ui.common.zapioTextFieldColors
 import io.github.reichimd.zapio.ui.theme.ZapioColors
 
 @Composable
@@ -62,19 +62,7 @@ fun EnterIpDialog(onConnect: (TvAddress) -> Unit, onDismiss: () -> Unit) {
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
                 keyboardActions = KeyboardActions(onGo = { submit() }),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = ZapioColors.Text,
-                    unfocusedTextColor = ZapioColors.Text,
-                    focusedBorderColor = ZapioColors.Accent,
-                    unfocusedBorderColor = ZapioColors.Line,
-                    focusedLabelColor = ZapioColors.Accent,
-                    unfocusedLabelColor = ZapioColors.TextMuted,
-                    cursorColor = ZapioColors.Accent,
-                    errorBorderColor = ZapioColors.Danger,
-                    errorLabelColor = ZapioColors.Danger,
-                    errorSupportingTextColor = ZapioColors.Danger,
-                    errorTextColor = ZapioColors.Text,
-                ),
+                colors = zapioTextFieldColors(),
             )
         }
     }

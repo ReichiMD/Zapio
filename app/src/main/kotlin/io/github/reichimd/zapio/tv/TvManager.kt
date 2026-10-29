@@ -2,7 +2,6 @@ package io.github.reichimd.zapio.tv
 
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import io.github.reichimd.zapio.adb.InstallProblem
 import io.github.reichimd.zapio.adb.PortState
 import io.github.reichimd.zapio.adb.TvAddress
@@ -14,6 +13,7 @@ import io.github.reichimd.zapio.adb.TvResult
 import io.github.reichimd.zapio.adb.TvScanner
 import io.github.reichimd.zapio.data.DeviceStore
 import io.github.reichimd.zapio.data.SavedTv
+import io.github.reichimd.zapio.data.TargetFolder
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -33,9 +33,7 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
-import java.io.FilterInputStream
 import java.io.IOException
-import java.io.InputStream
 
 sealed interface ConnectionState {
     data object Idle : ConnectionState
@@ -73,10 +71,11 @@ sealed interface InstallFailure {
 }
 
 /**
- * Everything the app does with TVs: one connection at a time, network search, installing, remote control.
+ * Everything the app does with TVs: one connection at a time, network search, installing, remote control,
+ * files and screen captures.
  * Lives as long as the app process, so an install keeps running when its screen is left.
  */
-class TvManager(private val context: Context, private val store: DeviceStore) {
+class TvManager(private val context: Context, private val store: DeviceStore, targetFolder: TargetFolder) {
 
     // A bug in one job must not take the whole app down; each job reports its own failures.
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineExceptionHandler { _, _ -> })
@@ -112,6 +111,12 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
 
     /** Runs only while its screen is open; it does not wait for [lock], so keys work during an install. */
     val remote = RemoteControl(scope)
+
+    private val phone = PhoneFiles(context)
+
+    val files = TvFileManager(scope, lock, { connection }, phone, targetFolder)
+
+    val capture = CaptureManager(scope, lock, { connection }, phone, targetFolder)
 
     fun startRemote() {
         connection?.let(remote::start)
@@ -263,8 +268,8 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
         if (installJob?.isActive == true) return
         installJob = scope.launch {
             val job = coroutineContext.job
-            val fileName = displayName(uri)
-            val size = fileSize(uri)
+            val fileName = phone.displayName(uri)
+            val size = phone.size(uri)
             if (size == null || size <= 0) {
                 _install.value = InstallState.Failed(fileName, InstallFailure.FileUnreadable)
                 return@launch
@@ -279,8 +284,7 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
                 val outcome = try {
                     // The TV may have dropped a connection that sat unused for a while.
                     runInterruptible { tv.ensureConnected() }
-                    val stream = context.contentResolver.openInputStream(uri) ?: throw IOException("no stream")
-                    val input = PhoneFileInputStream(stream)
+                    val input = phone.openRead(uri)
                     var lastPercent = -1L
                     val result = runInterruptible {
                         tv.install(input, size) { sent ->
@@ -334,50 +338,10 @@ class TvManager(private val context: Context, private val store: DeviceStore) {
 
     private fun closeConnection() {
         remote.stop()
+        files.reset()
+        capture.reset()
         val old = connection
         connection = null
         old?.close()
-    }
-
-    private fun displayName(uri: Uri): String? = query(uri, OpenableColumns.DISPLAY_NAME) { getString(it) }
-
-    /** Size from the file provider, or from the file itself if the provider does not know it. */
-    private fun fileSize(uri: Uri): Long? {
-        val known = query(uri, OpenableColumns.SIZE) { if (isNull(it)) null else getLong(it) }
-        if (known != null && known > 0) return known
-        return try {
-            context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length }?.takeIf { it > 0 }
-        } catch (e: IOException) {
-            null
-        } catch (e: SecurityException) {
-            null
-        } catch (e: IllegalArgumentException) {
-            null
-        }
-    }
-
-    private fun <T> query(uri: Uri, column: String, read: android.database.Cursor.(Int) -> T?): T? = try {
-        context.contentResolver.query(uri, arrayOf(column), null, null, null)?.use { cursor ->
-            val index = cursor.getColumnIndex(column)
-            if (index >= 0 && cursor.moveToFirst()) cursor.read(index) else null
-        }
-    } catch (e: SecurityException) {
-        null
-    } catch (e: IllegalArgumentException) {
-        null
-    }
-}
-
-/** A read error of the phone's file, kept apart from errors of the TV connection. */
-private class PhoneFileException(cause: IOException) : RuntimeException(cause)
-
-private class PhoneFileInputStream(input: InputStream) : FilterInputStream(input) {
-    override fun read(): Int = phoneFile { super.read() }
-    override fun read(b: ByteArray, off: Int, len: Int): Int = phoneFile { super.read(b, off, len) }
-
-    private inline fun <T> phoneFile(block: () -> T): T = try {
-        block()
-    } catch (e: IOException) {
-        throw PhoneFileException(e)
     }
 }
