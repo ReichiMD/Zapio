@@ -6,10 +6,10 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,13 +32,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(statusBarStyle = bars, navigationBarStyle = bars)
         setContent {
             ZapioTheme {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(ZapioColors.Background)
-                        .safeDrawingPadding(),
+                // Surface sets the text color; without it text outside a card is black.
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = ZapioColors.Background,
+                    contentColor = ZapioColors.Text,
                 ) {
-                    ZapioApp()
+                    Box(Modifier.safeDrawingPadding()) {
+                        ZapioApp()
+                    }
                 }
             }
         }
