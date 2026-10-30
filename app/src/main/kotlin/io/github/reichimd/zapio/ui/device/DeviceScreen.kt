@@ -35,7 +35,7 @@ import io.github.reichimd.zapio.ui.common.ZapioCard
 import io.github.reichimd.zapio.ui.theme.ZapioColors
 import io.github.reichimd.zapio.ui.theme.ZapioTheme
 
-/** Tools for the connected TV. More tiles join in later stages. */
+/** Tools for the connected TV. */
 @Composable
 fun DeviceScreen(
     tv: SavedTv,
@@ -44,6 +44,7 @@ fun DeviceScreen(
     onRemote: () -> Unit,
     onFiles: () -> Unit,
     onCapture: () -> Unit,
+    onTerminal: () -> Unit,
     onDisconnect: () -> Unit,
 ) {
     Column(
@@ -92,10 +93,11 @@ fun DeviceScreen(
                 text = stringResource(R.string.capture_text),
                 onClick = onCapture,
             )
-            Text(
-                stringResource(R.string.device_more_soon),
-                style = MaterialTheme.typography.bodyMedium,
-                color = ZapioColors.TextMuted,
+            ToolTile(
+                icon = R.drawable.ic_terminal,
+                title = stringResource(R.string.terminal_title),
+                text = stringResource(R.string.terminal_text),
+                onClick = onTerminal,
             )
         }
         SecondaryButton(
@@ -143,7 +145,7 @@ private fun DeviceScreenPreview() {
         Surface(color = ZapioColors.Background, contentColor = ZapioColors.Text) {
             DeviceScreen(
                 SavedTv(TvAddress("192.0.2.20"), null, 0),
-                onBack = {}, onInstall = {}, onRemote = {}, onFiles = {}, onCapture = {}, onDisconnect = {},
+                onBack = {}, onInstall = {}, onRemote = {}, onFiles = {}, onCapture = {}, onTerminal = {}, onDisconnect = {},
             )
         }
     }

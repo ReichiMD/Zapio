@@ -209,4 +209,65 @@ class EmulatorTest {
         assertTrue((tv.fileSize(remote) ?: 0) > 0)
         tv.delete(remote)
     }
+
+    @Test
+    fun commandOutputComesLive() {
+        val command = tv.startCommand("echo first; sleep 2; echo Größe; echo oops >&2; exit 3")
+        val output = TerminalOutput()
+        var firstAt = 0L
+        val started = System.nanoTime()
+        val code = command.await { text, isError ->
+            if (firstAt == 0L) firstAt = System.nanoTime()
+            output.add(text, isError)
+        }
+        output.finish()
+        assertEquals(3, code)
+        assertTrue("first line came before the sleep ended", (firstAt - started) / 1_000_000 < 1_500)
+        assertEquals(
+            listOf(OutputLine("first", false), OutputLine("Größe", false), OutputLine("oops", true)),
+            output.snapshot().lines,
+        )
+    }
+
+    @Test
+    fun commandWaitingForInputEndsAtOnce() {
+        val started = System.nanoTime()
+        assertEquals(0, tv.startCommand("cat").await { _, _ -> })
+        assertTrue((System.nanoTime() - started) / 1_000_000 < 5_000)
+    }
+
+    @Test
+    fun stoppedCommandEndsAndConnectionStays() {
+        val command = tv.startCommand("while true; do echo tick; sleep 0.2; done")
+        val stopper = Thread {
+            Thread.sleep(1_500)
+            command.stop()
+        }
+        stopper.start()
+        var ticks = 0
+        val started = System.nanoTime()
+        val code = command.await { text, _ -> ticks += text.split('\n').count { it == "tick" } }
+        stopper.join()
+        assertEquals(null, code)
+        assertTrue(command.isStopped)
+        assertTrue("ticks: $ticks", ticks > 0)
+        assertTrue((System.nanoTime() - started) / 1_000_000 < 10_000)
+        assertEquals("zapio", tv.shell("echo zapio").output.trim())
+    }
+
+    @Test
+    fun stoppedCommandEndsOnTheTv() {
+        val command = tv.startCommand("sleep 77")
+        val waiter = Thread { command.await { _, _ -> } }
+        waiter.start()
+        Thread.sleep(1_000)
+        command.stop()
+        waiter.join(10_000)
+        assertTrue("await ended after stop", !waiter.isAlive)
+        Thread.sleep(1_000)
+        val left = tv.shell("ps -A -o ARGS").output
+        assertTrue("ps listed processes", left.contains("ARGS"))
+        println("After stop: sleep 77 still running = ${left.lines().any { it.trim() == "sleep 77" }}")
+        assertTrue(left, left.lines().none { it.trim() == "sleep 77" })
+    }
 }

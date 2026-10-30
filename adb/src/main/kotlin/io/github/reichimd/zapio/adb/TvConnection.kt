@@ -1,6 +1,7 @@
 package io.github.reichimd.zapio.adb
 
 import dadb.AdbShellPacket
+import dadb.AdbShellStream
 import dadb.AdbTimeoutException
 import dadb.Dadb
 import dadb.InstallResult
@@ -61,6 +62,9 @@ class TvConnection private constructor(internal val dadb: Dadb, val address: TvA
         }
         bytes.toString(Charsets.UTF_8.name())
     }
+
+    /** Opens a shell stream for [command]; reading it is up to the caller, see [TvCommand]. */
+    internal fun openShellStream(command: String): AdbShellStream = guard { dadb.openShell(command) }
 
     /**
      * Copies [input] to [remotePath] on the TV; [onProgress] gets the bytes sent so far.
@@ -177,6 +181,9 @@ class TvConnection private constructor(internal val dadb: Dadb, val address: TvA
 
     /** A remote control that keeps its own shell open on this connection. */
     fun remote(): TvRemote = TvRemote(this)
+
+    /** Starts [command] for the terminal; its output comes in while it runs. */
+    fun startCommand(command: String): TvCommand = TvCommand.start(this, command)
 
     override fun close() = dadb.close()
 

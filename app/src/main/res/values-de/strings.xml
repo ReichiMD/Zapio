@@ -56,7 +56,6 @@
     <string name="device_tools">Werkzeuge</string>
     <string name="device_install">App installieren</string>
     <string name="device_install_text">Eine APK vom Handy auf den TV bringen</string>
-    <string name="device_more_soon">Das Terminal kommt in einer nächsten Version.</string>
     <string name="device_disconnect">Trennen</string>
     <string name="device_adb_hint">Wenn du fertig bist, schalte ADB-Debugging am TV wieder aus.</string>
 
@@ -204,4 +203,34 @@
     <string name="about_licenses_title">Open-Source-Lizenzen</string>
     <string name="about_licenses_text">Zapio nutzt diese Bibliotheken und Schriften. Tippe auf einen Eintrag, um die Lizenz zu lesen.</string>
     <string name="about_show_license">Lizenz anzeigen</string>
+
+    <!-- Terminal -->
+    <string name="terminal_title">Terminal</string>
+    <string name="terminal_text">Befehle am TV ausführen, Ausgabe kommt live</string>
+    <string name="terminal_intro">Befehle laufen in der ADB-Shell des TVs. Tippe auf einen Befehl in der Liste, um ihn noch mal zu nutzen.</string>
+    <string name="terminal_input_label">Befehl für den TV</string>
+    <string name="terminal_input_hint">Befehl, z. B. ls /sdcard</string>
+    <string name="terminal_run">Ausführen</string>
+    <string name="terminal_stop">Befehl abbrechen</string>
+    <string name="terminal_clear">Verlauf leeren</string>
+    <string name="terminal_copy">Ausgabe von %1$s kopieren</string>
+    <string name="terminal_running">Läuft …</string>
+    <string name="terminal_done">Fertig</string>
+    <string name="terminal_exit_code">Beendet mit Code %1$d</string>
+    <string name="terminal_ended">Beendet</string>
+    <string name="terminal_stopped">Abgebrochen</string>
+    <string name="terminal_no_output">Keine Ausgabe.</string>
+    <plurals name="terminal_dropped">
+        <item quantity="one">%1$d frühere Zeile ausgelassen</item>
+        <item quantity="other">%1$d frühere Zeilen ausgelassen</item>
+    </plurals>
+    <string name="terminal_quick_apps">Installierte Apps</string>
+    <string name="terminal_quick_storage">Speicher</string>
+    <string name="terminal_quick_properties">System-Infos</string>
+    <string name="terminal_quick_processes">Prozesse</string>
+    <string name="terminal_quick_screen">Bildschirmgröße</string>
+    <string name="terminal_quick_reboot">TV neu starten</string>
+    <string name="terminal_reboot_title">TV neu starten?</string>
+    <string name="terminal_reboot_text">Der TV startet jetzt neu und die Verbindung bricht ab. Verbinde dich wieder, wenn der TV zurück ist.</string>
+    <string name="terminal_reboot_confirm">Neu starten</string>
 </resources>

@@ -58,7 +58,6 @@
     <string name="device_tools">Tools</string>
     <string name="device_install">Install app</string>
     <string name="device_install_text">Send an APK from your phone to the TV</string>
-    <string name="device_more_soon">The terminal comes in a next version.</string>
     <string name="device_disconnect">Disconnect</string>
     <string name="device_adb_hint">When you are done, turn ADB debugging off again on the TV.</string>
 
@@ -212,4 +211,35 @@
     <string name="about_licenses_title">Open-source licenses</string>
     <string name="about_licenses_text">Zapio is built with these libraries and fonts. Tap one to read its license.</string>
     <string name="about_show_license">Show license</string>
+
+    <!-- Terminal -->
+    <string name="terminal_title">Terminal</string>
+    <string name="terminal_prompt" translatable="false">$</string>
+    <string name="terminal_text">Run commands on the TV, output comes live</string>
+    <string name="terminal_intro">Commands run in the TV’s ADB shell. Tap a command in the list to use it again.</string>
+    <string name="terminal_input_label">Command for the TV</string>
+    <string name="terminal_input_hint">Command, e.g. ls /sdcard</string>
+    <string name="terminal_run">Run</string>
+    <string name="terminal_stop">Stop command</string>
+    <string name="terminal_clear">Clear history</string>
+    <string name="terminal_copy">Copy output of %1$s</string>
+    <string name="terminal_running">Running…</string>
+    <string name="terminal_done">Done</string>
+    <string name="terminal_exit_code">Ended with code %1$d</string>
+    <string name="terminal_ended">Ended</string>
+    <string name="terminal_stopped">Stopped</string>
+    <string name="terminal_no_output">No output.</string>
+    <plurals name="terminal_dropped">
+        <item quantity="one">%1$d earlier line left out</item>
+        <item quantity="other">%1$d earlier lines left out</item>
+    </plurals>
+    <string name="terminal_quick_apps">Installed apps</string>
+    <string name="terminal_quick_storage">Storage</string>
+    <string name="terminal_quick_properties">System info</string>
+    <string name="terminal_quick_processes">Processes</string>
+    <string name="terminal_quick_screen">Screen size</string>
+    <string name="terminal_quick_reboot">Restart TV</string>
+    <string name="terminal_reboot_title">Restart the TV?</string>
+    <string name="terminal_reboot_text">The TV restarts now and the connection breaks off. Connect again once the TV is back.</string>
+    <string name="terminal_reboot_confirm">Restart</string>
 </resources>
