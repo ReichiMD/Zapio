@@ -270,4 +270,21 @@ class EmulatorTest {
         println("After stop: sleep 77 still running = ${left.lines().any { it.trim() == "sleep 77" }}")
         assertTrue(left, left.lines().none { it.trim() == "sleep 77" })
     }
+
+    @Test
+    fun managesApps() {
+        val apk = File(requireNotNull(System.getenv("ZAPIO_TEST_APK")) { "ZAPIO_TEST_APK not set" })
+        val name = "io.github.reichimd.zapio"
+        assertEquals(TvResult.Success, tv.install(apk.inputStream(), apk.length()))
+        val app = tv.listApps().single { it.packageName == name }
+        assertEquals(apk.length(), app.apkBytes)
+        val details = tv.appDetails(name)
+        assertTrue(details.toString(), !details.versionName.isNullOrBlank() && details.firstInstall != null)
+        assertEquals(TvResult.Success, tv.openApp(name))
+        assertEquals(TvResult.Success, tv.forceStop(name))
+        assertEquals(TvResult.Success, tv.clearData(name))
+        assertEquals(TvResult.Success, tv.uninstall(name))
+        assertTrue(tv.listApps().none { it.packageName == name })
+        assertTrue(tv.uninstall(name) is TvResult.Failure)
+    }
 }
