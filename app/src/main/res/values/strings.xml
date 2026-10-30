@@ -242,4 +242,59 @@
     <string name="terminal_reboot_title">Restart the TV?</string>
     <string name="terminal_reboot_text">The TV restarts now and the connection breaks off. Connect again once the TV is back.</string>
     <string name="terminal_reboot_confirm">Restart</string>
+
+    <!-- Apps on the TV -->
+    <string name="apps_title">Apps</string>
+    <string name="apps_text">See, open and uninstall your apps on the TV</string>
+    <string name="apps_refresh">Load again</string>
+    <string name="apps_search">Search apps</string>
+    <string name="apps_loading">Loading the apps from the TV…</string>
+    <string name="apps_empty">No apps installed by you.</string>
+    <string name="apps_no_match">No app matches the search.</string>
+    <string name="apps_note">Only apps you installed are shown. Apps that came with the TV are left out on purpose.</string>
+    <plurals name="apps_count">
+        <item quantity="one">%1$d app</item>
+        <item quantity="other">%1$d apps</item>
+    </plurals>
+    <string name="apps_select_all">Select all</string>
+    <string name="apps_select_none">Select none</string>
+    <string name="apps_select">Select %1$s</string>
+    <plurals name="apps_uninstall_selected">
+        <item quantity="one">Uninstall %1$d app</item>
+        <item quantity="other">Uninstall %1$d apps</item>
+    </plurals>
+    <string name="apps_details">Details</string>
+    <string name="apps_version">Version %1$s</string>
+    <string name="apps_version_code">Version %1$s (%2$s)</string>
+    <string name="apps_installed">Installed %1$s</string>
+    <string name="apps_updated">Updated %1$s</string>
+    <string name="apps_size">App size %1$s</string>
+    <string name="apps_details_failed">The TV did not give any details.</string>
+    <string name="apps_open">Open on the TV</string>
+    <string name="apps_stop">Force stop</string>
+    <string name="apps_clear_data">Clear data</string>
+    <string name="apps_uninstall">Uninstall</string>
+    <string name="apps_confirm_uninstall_title">Uninstall %1$s?</string>
+    <plurals name="apps_confirm_uninstall_many_title">
+        <item quantity="one">Uninstall %1$d app?</item>
+        <item quantity="other">Uninstall %1$d apps?</item>
+    </plurals>
+    <string name="apps_confirm_uninstall_text">The app and all its data are removed from the TV.</string>
+    <string name="apps_confirm_clear_title">Clear data of %1$s?</string>
+    <string name="apps_confirm_clear_text">Settings, logins and saved content of the app are deleted. The app stays installed.</string>
+    <string name="apps_uninstalling">Uninstalling %1$d of %2$d: %3$s</string>
+    <string name="apps_working">Working on %1$s…</string>
+    <plurals name="apps_removed">
+        <item quantity="one">%1$d app uninstalled.</item>
+        <item quantity="other">%1$d apps uninstalled.</item>
+    </plurals>
+    <string name="apps_not_removed">Not uninstalled: %1$s</string>
+    <string name="apps_done_open">%1$s was started on the TV.</string>
+    <string name="apps_done_stop">%1$s was stopped.</string>
+    <string name="apps_done_clear">The data of %1$s was cleared.</string>
+    <string name="apps_refused">The TV refused it for %1$s.</string>
+    <plurals name="apps_and_more">
+        <item quantity="one">and %1$d more</item>
+        <item quantity="other">and %1$d more</item>
+    </plurals>
 </resources>

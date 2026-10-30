@@ -25,6 +25,7 @@ import io.github.reichimd.zapio.tv.ConnectionState
 import io.github.reichimd.zapio.ui.about.AboutScreen
 import io.github.reichimd.zapio.ui.about.LicenseScreen
 import io.github.reichimd.zapio.ui.about.ThirdPartyNotice
+import io.github.reichimd.zapio.ui.apps.AppsScreen
 import io.github.reichimd.zapio.ui.capture.CaptureScreen
 import io.github.reichimd.zapio.ui.common.TargetFolderCard
 import io.github.reichimd.zapio.ui.common.rememberFolderPicker
@@ -82,12 +83,13 @@ private const val REMOTE = "remote"
 private const val FILES = "files"
 private const val CAPTURE = "capture"
 private const val TERMINAL = "terminal"
+private const val APPS = "apps"
 private const val SETTINGS = "settings"
 private const val ABOUT = "about"
 private const val LICENSE_PREFIX = "license:"
 
 /** Screens that need a connected TV. */
-private val NEEDS_TV = setOf(DEVICE, INSTALL, REMOTE, FILES, CAPTURE, TERMINAL)
+private val NEEDS_TV = setOf(DEVICE, INSTALL, REMOTE, FILES, CAPTURE, TERMINAL, APPS)
 
 @Composable
 private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (AppLanguage) -> Unit) {
@@ -119,6 +121,7 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
                 tv = connected.tv,
                 onBack = back,
                 onInstall = { open(INSTALL) },
+                onApps = { open(APPS) },
                 onRemote = { open(REMOTE) },
                 onFiles = { open(FILES) },
                 onCapture = { open(CAPTURE) },
@@ -132,6 +135,7 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
         }
         current == FILES -> FilesScreen(tvs = app.tvs, targetFolder = app.targetFolder, onBack = back)
         current == CAPTURE -> CaptureScreen(tvs = app.tvs, targetFolder = app.targetFolder, onBack = back)
+        current == APPS -> AppsScreen(tvs = app.tvs, onBack = back)
         current == TERMINAL -> TerminalScreen(tvs = app.tvs, onBack = back)
         current == SETTINGS -> SettingsScreen(
             language = language,

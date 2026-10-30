@@ -41,6 +41,7 @@ fun DeviceScreen(
     tv: SavedTv,
     onBack: () -> Unit,
     onInstall: () -> Unit,
+    onApps: () -> Unit,
     onRemote: () -> Unit,
     onFiles: () -> Unit,
     onCapture: () -> Unit,
@@ -80,6 +81,12 @@ fun DeviceScreen(
                 title = stringResource(R.string.device_install),
                 text = stringResource(R.string.device_install_text),
                 onClick = onInstall,
+            )
+            ToolTile(
+                icon = R.drawable.ic_apps,
+                title = stringResource(R.string.apps_title),
+                text = stringResource(R.string.apps_text),
+                onClick = onApps,
             )
             ToolTile(
                 icon = R.drawable.ic_folder,
@@ -145,7 +152,7 @@ private fun DeviceScreenPreview() {
         Surface(color = ZapioColors.Background, contentColor = ZapioColors.Text) {
             DeviceScreen(
                 SavedTv(TvAddress("192.0.2.20"), null, 0),
-                onBack = {}, onInstall = {}, onRemote = {}, onFiles = {}, onCapture = {}, onTerminal = {}, onDisconnect = {},
+                onBack = {}, onInstall = {}, onApps = {}, onRemote = {}, onFiles = {}, onCapture = {}, onTerminal = {}, onDisconnect = {},
             )
         }
     }
