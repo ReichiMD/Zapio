@@ -25,8 +25,12 @@ import io.github.reichimd.zapio.tv.ConnectionState
 import io.github.reichimd.zapio.ui.about.AboutScreen
 import io.github.reichimd.zapio.ui.about.LicenseScreen
 import io.github.reichimd.zapio.ui.about.ThirdPartyNotice
+import io.github.reichimd.zapio.ui.capture.CaptureScreen
+import io.github.reichimd.zapio.ui.common.TargetFolderCard
+import io.github.reichimd.zapio.ui.common.rememberFolderPicker
 import io.github.reichimd.zapio.ui.device.DeviceScreen
 import io.github.reichimd.zapio.ui.devices.DevicesScreen
+import io.github.reichimd.zapio.ui.files.FilesScreen
 import io.github.reichimd.zapio.ui.install.InstallScreen
 import io.github.reichimd.zapio.ui.remote.RemoteScreen
 import io.github.reichimd.zapio.ui.settings.SettingsScreen
@@ -74,12 +78,14 @@ private const val DEVICES = "devices"
 private const val DEVICE = "device"
 private const val INSTALL = "install"
 private const val REMOTE = "remote"
+private const val FILES = "files"
+private const val CAPTURE = "capture"
 private const val SETTINGS = "settings"
 private const val ABOUT = "about"
 private const val LICENSE_PREFIX = "license:"
 
 /** Screens that need a connected TV. */
-private val NEEDS_TV = setOf(DEVICE, INSTALL, REMOTE)
+private val NEEDS_TV = setOf(DEVICE, INSTALL, REMOTE, FILES, CAPTURE)
 
 @Composable
 private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (AppLanguage) -> Unit) {
@@ -112,6 +118,8 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
                 onBack = back,
                 onInstall = { open(INSTALL) },
                 onRemote = { open(REMOTE) },
+                onFiles = { open(FILES) },
+                onCapture = { open(CAPTURE) },
                 onDisconnect = app.tvs::disconnect,
             )
         }
@@ -119,11 +127,14 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
         current == REMOTE -> (state as? ConnectionState.Connected)?.let { connected ->
             RemoteScreen(title = connected.tv.title, tvs = app.tvs, onBack = back)
         }
+        current == FILES -> FilesScreen(tvs = app.tvs, targetFolder = app.targetFolder, onBack = back)
+        current == CAPTURE -> CaptureScreen(tvs = app.tvs, targetFolder = app.targetFolder, onBack = back)
         current == SETTINGS -> SettingsScreen(
             language = language,
             onLanguage = onLanguage,
             onNewKey = app.tvs::newKey,
             onBack = back,
+            folderCard = { TargetFolderCard(app.targetFolder, onChoose = rememberFolderPicker(app.targetFolder)) },
         )
         current == ABOUT -> AboutScreen(
             onBack = back,

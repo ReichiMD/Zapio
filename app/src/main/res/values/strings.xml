@@ -58,7 +58,7 @@
     <string name="device_tools">Tools</string>
     <string name="device_install">Install app</string>
     <string name="device_install_text">Send an APK from your phone to the TV</string>
-    <string name="device_more_soon">Files, terminal and more come in the next versions.</string>
+    <string name="device_more_soon">The terminal comes in a next version.</string>
     <string name="device_disconnect">Disconnect</string>
     <string name="device_adb_hint">When you are done, turn ADB debugging off again on the TV.</string>
 
@@ -112,6 +112,85 @@
     <string name="remote_text_note">Select a text field on the TV first. Umlauts arrive as ae, oe, ue.</string>
     <string name="remote_delete">Delete</string>
     <string name="remote_enter">Enter</string>
+
+    <!-- Files -->
+    <string name="files_title">Files</string>
+    <string name="files_text">Browse the TV and copy files both ways</string>
+    <string name="files_storage">TV storage</string>
+    <string name="files_send">Send from phone</string>
+    <string name="files_new_folder">New folder</string>
+    <string name="files_refresh">Load again</string>
+    <string name="files_empty">This folder is empty.</string>
+    <string name="files_no_access">No access. The TV does not let Zapio look into this folder.</string>
+    <string name="files_missing">This folder is not there any more.</string>
+    <string name="files_to_storage">Back to TV storage</string>
+    <string name="files_folder">Folder</string>
+    <string name="files_info" translatable="false">%1$s · %2$s</string>
+    <string name="files_actions">Actions for %1$s</string>
+    <string name="files_save">Save to phone</string>
+    <string name="files_rename">Rename</string>
+    <string name="files_delete">Delete</string>
+    <string name="files_delete_title">Delete %1$s?</string>
+    <string name="files_delete_file_text">The file is removed from the TV for good.</string>
+    <string name="files_delete_folder_text">The folder and everything in it are removed from the TV for good.</string>
+    <string name="files_name_label">Name</string>
+    <string name="files_name_invalid">A name cannot be empty or contain a slash (/).</string>
+    <string name="files_create">Create</string>
+    <string name="files_problem_title">That did not work</string>
+    <string name="files_problem_name_taken">There is already something with this name in the folder.</string>
+    <string name="files_problem_refused">The TV refused it.</string>
+
+    <!-- Copying between phone and TV -->
+    <string name="transfer_to_tv">Sending to the TV</string>
+    <string name="transfer_to_phone">Saving to the phone</string>
+    <string name="transfer_count">File %1$d of %2$d</string>
+    <string name="transfer_bytes">%1$s of %2$s</string>
+    <string name="transfer_cancel">Stop</string>
+    <string name="transfer_keep_open">You can look around meanwhile. Keep Zapio open until the copy is done.</string>
+    <string name="transfer_done_title">Copied</string>
+    <string name="transfer_done_to_tv">%1$s is on the TV now.</string>
+    <plurals name="transfer_done_to_tv_many">
+        <item quantity="one">%1$d file is on the TV now.</item>
+        <item quantity="other">%1$d files are on the TV now.</item>
+    </plurals>
+    <string name="transfer_done_to_phone">%1$s is in the phone folder now.</string>
+    <string name="transfer_cancelled">Copy stopped. No half-copied file is left behind.</string>
+    <string name="transfer_failed">Not copied</string>
+    <string name="transfer_phone_file">The file on the phone could not be read or written. Is there enough free space?</string>
+    <string name="transfer_no_folder">Choose the phone folder first, then try again.</string>
+    <string name="transfer_refused">The TV refused the copy.</string>
+
+    <!-- Phone folder for files from the TV -->
+    <string name="folder_title">Phone folder</string>
+    <string name="folder_text">Files from the TV, screenshots and videos are saved here.</string>
+    <string name="folder_none">No folder chosen yet.</string>
+    <string name="folder_choose">Choose folder</string>
+    <string name="folder_change">Change folder</string>
+
+    <!-- Screenshot and video -->
+    <string name="capture_title">Screenshot and video</string>
+    <string name="capture_text">Pictures and videos of the TV screen</string>
+    <string name="capture_intro">Takes a picture or a video of what the TV shows and saves it in the phone folder. Videos run up to 3 minutes.</string>
+    <string name="capture_protected">Protected videos, for example from streaming apps, often come out black. The TV blocks them, not Zapio.</string>
+    <string name="capture_screenshot">Take screenshot</string>
+    <string name="capture_record">Start video</string>
+    <string name="capture_stop">Stop video</string>
+    <string name="capture_preparing_screenshot">Taking the screenshot…</string>
+    <string name="capture_preparing_video">Starting the video…</string>
+    <string name="capture_recording">Recording</string>
+    <string name="capture_stopping">Finishing the video…</string>
+    <string name="capture_time_left">%1$s left</string>
+    <string name="capture_saving">Copying to the phone…</string>
+    <string name="capture_saved_screenshot">Screenshot saved</string>
+    <string name="capture_saved_video">Video saved</string>
+    <string name="capture_saved_text">%1$s is in the phone folder.</string>
+    <string name="capture_open">Open</string>
+    <string name="capture_no_app">No app on the phone can open this file.</string>
+    <string name="capture_preview">Preview of the screenshot</string>
+    <string name="capture_failed">Not saved</string>
+    <string name="capture_not_taken">The TV could not take it.</string>
+    <string name="capture_phone_file">The file could not be saved on the phone. Is there enough free space?</string>
+
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_language">Language</string>

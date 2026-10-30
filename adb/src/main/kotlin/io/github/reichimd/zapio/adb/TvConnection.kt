@@ -1,11 +1,13 @@
 package io.github.reichimd.zapio.adb
 
+import dadb.AdbShellPacket
 import dadb.AdbTimeoutException
 import dadb.Dadb
 import dadb.InstallResult
 import dadb.SyncResult
 import okio.sink
 import okio.source
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -42,26 +44,53 @@ class TvConnection private constructor(internal val dadb: Dadb, val address: TvA
         ShellResult(response.output, response.errorOutput, response.exitCode)
     }
 
-    /** Copies [input] to [remotePath] on the TV. The stream is closed afterwards. */
+    /**
+     * Output of [command] decoded as UTF-8 only at the end. The library decodes each packet on its own,
+     * which breaks a character that falls on a packet border; long file lists need this.
+     */
+    internal fun shellText(command: String): String = guard {
+        val bytes = ByteArrayOutputStream()
+        dadb.openShell(command).use { stream ->
+            while (true) {
+                when (val packet = stream.read()) {
+                    is AdbShellPacket.StdOut -> bytes.write(packet.payload)
+                    is AdbShellPacket.Exit -> break
+                    else -> Unit
+                }
+            }
+        }
+        bytes.toString(Charsets.UTF_8.name())
+    }
+
+    /**
+     * Copies [input] to [remotePath] on the TV; [onProgress] gets the bytes sent so far.
+     * The stream is closed afterwards.
+     */
     fun push(
         input: InputStream,
         remotePath: String,
         mode: Int = DEFAULT_FILE_MODE,
         lastModifiedMs: Long = System.currentTimeMillis(),
-    ): TvResult = guard {
-        input.source().use { source -> dadb.push(source, remotePath, mode, lastModifiedMs).toTvResult() }
+        onProgress: (Long) -> Unit = {},
+    ): TvResult = transfer {
+        CountingInputStream(input, onProgress).source().use { source ->
+            dadb.push(source, remotePath, mode, lastModifiedMs).toTvResult()
+        }
     }
 
-    /** Copies [remotePath] from the TV into [output]. The stream is closed afterwards. */
-    fun pull(output: OutputStream, remotePath: String): TvResult = guard {
-        output.sink().use { sink -> dadb.pull(sink, remotePath).toTvResult() }
+    /**
+     * Copies [remotePath] from the TV into [output]; [onProgress] gets the bytes received so far.
+     * The stream is closed afterwards.
+     */
+    fun pull(output: OutputStream, remotePath: String, onProgress: (Long) -> Unit = {}): TvResult = transfer {
+        CountingOutputStream(output, onProgress).sink().use { sink -> dadb.pull(sink, remotePath).toTvResult() }
     }
 
     /**
      * Installs an APK of [size] bytes read from [input]; [onProgress] gets the bytes sent so far.
      * Once all bytes are sent the TV still needs a moment to install. The stream is closed afterwards.
      */
-    fun install(input: InputStream, size: Long, onProgress: (Long) -> Unit = {}): TvResult = guard {
+    fun install(input: InputStream, size: Long, onProgress: (Long) -> Unit = {}): TvResult = transfer {
         CountingInputStream(input, onProgress).use { counting ->
             if (dadb.supportsFeature("cmd")) {
                 when (val result = dadb.install(counting.source(), size)) {
@@ -160,11 +189,26 @@ class TvConnection private constructor(internal val dadb: Dadb, val address: TvA
         block()
     } catch (e: TvException) {
         throw e
+    } catch (e: IllegalStateException) {
+        // The library checks packets with check(); a garbled one means the connection is out of step.
+        dadb.close()
+        throw TvException(TvProblem.CONNECTION_LOST, e)
     } catch (e: IOException) {
         // The library keeps using a connection the TV has dropped; closing it makes the next call open a new one.
         dadb.close()
         val timedOut = e is AdbTimeoutException || e is SocketTimeoutException || e.cause is SocketTimeoutException
         throw TvException(if (timedOut) TvProblem.NO_ANSWER else TvProblem.CONNECTION_LOST, e)
+    }
+
+    /**
+     * Like [guard], and also closes the connection when the phone's side of a copy fails
+     * or a progress callback throws to stop it: the TV is then left in the middle of a transfer.
+     */
+    private inline fun <T> transfer(block: () -> T): T = try {
+        guard(block)
+    } catch (e: RuntimeException) {
+        dadb.close()
+        throw e
     }
 
     companion object {

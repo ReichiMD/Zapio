@@ -37,13 +37,14 @@ import io.github.reichimd.zapio.ui.common.ZapioDialog
 import io.github.reichimd.zapio.ui.theme.ZapioColors
 import io.github.reichimd.zapio.ui.theme.ZapioTheme
 
-/** Language of the app and the key the app shows to TVs. */
+/** Language of the app, the phone folder for files from the TV, and the key the app shows to TVs. */
 @Composable
 fun SettingsScreen(
     language: AppLanguage,
     onLanguage: (AppLanguage) -> Unit,
     onNewKey: () -> Unit,
     onBack: () -> Unit,
+    folderCard: @Composable () -> Unit = {},
 ) {
     var confirmNewKey by rememberSaveable { mutableStateOf(false) }
     Column(
@@ -70,6 +71,11 @@ fun SettingsScreen(
                     }
                 }
             }
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            SectionLabel(stringResource(R.string.folder_title))
+            folderCard()
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {

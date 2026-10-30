@@ -56,7 +56,7 @@
     <string name="device_tools">Werkzeuge</string>
     <string name="device_install">App installieren</string>
     <string name="device_install_text">Eine APK vom Handy auf den TV bringen</string>
-    <string name="device_more_soon">Dateien, Terminal und mehr kommen in den nächsten Versionen.</string>
+    <string name="device_more_soon">Das Terminal kommt in einer nächsten Version.</string>
     <string name="device_disconnect">Trennen</string>
     <string name="device_adb_hint">Wenn du fertig bist, schalte ADB-Debugging am TV wieder aus.</string>
 
@@ -108,6 +108,83 @@
     <string name="remote_text_note">Wähle zuerst am TV ein Textfeld aus. Umlaute kommen als ae, oe, ue an.</string>
     <string name="remote_delete">Löschen</string>
     <string name="remote_enter">Eingabe</string>
+    <!-- Dateien -->
+    <string name="files_title">Dateien</string>
+    <string name="files_text">TV durchsehen, Dateien in beide Richtungen kopieren</string>
+    <string name="files_storage">TV-Speicher</string>
+    <string name="files_send">Vom Handy senden</string>
+    <string name="files_new_folder">Neuer Ordner</string>
+    <string name="files_refresh">Neu laden</string>
+    <string name="files_empty">Dieser Ordner ist leer.</string>
+    <string name="files_no_access">Kein Zugriff. Der TV lässt Zapio nicht in diesen Ordner schauen.</string>
+    <string name="files_missing">Diesen Ordner gibt es nicht mehr.</string>
+    <string name="files_to_storage">Zurück zum TV-Speicher</string>
+    <string name="files_folder">Ordner</string>
+    <string name="files_actions">Aktionen für %1$s</string>
+    <string name="files_save">Aufs Handy speichern</string>
+    <string name="files_rename">Umbenennen</string>
+    <string name="files_delete">Löschen</string>
+    <string name="files_delete_title">%1$s löschen?</string>
+    <string name="files_delete_file_text">Die Datei wird endgültig vom TV entfernt.</string>
+    <string name="files_delete_folder_text">Der Ordner und alles darin werden endgültig vom TV entfernt.</string>
+    <string name="files_name_label">Name</string>
+    <string name="files_name_invalid">Ein Name darf nicht leer sein und keinen Schrägstrich (/) enthalten.</string>
+    <string name="files_create">Anlegen</string>
+    <string name="files_problem_title">Das hat nicht geklappt</string>
+    <string name="files_problem_name_taken">In diesem Ordner gibt es schon etwas mit diesem Namen.</string>
+    <string name="files_problem_refused">Der TV hat es abgelehnt.</string>
+
+    <!-- Kopieren zwischen Handy und TV -->
+    <string name="transfer_to_tv">Wird an den TV gesendet</string>
+    <string name="transfer_to_phone">Wird aufs Handy gespeichert</string>
+    <string name="transfer_count">Datei %1$d von %2$d</string>
+    <string name="transfer_bytes">%1$s von %2$s</string>
+    <string name="transfer_cancel">Abbrechen</string>
+    <string name="transfer_keep_open">Du kannst dich so lange umsehen. Lass Zapio offen, bis das Kopieren fertig ist.</string>
+    <string name="transfer_done_title">Kopiert</string>
+    <string name="transfer_done_to_tv">%1$s ist jetzt auf dem TV.</string>
+    <plurals name="transfer_done_to_tv_many">
+        <item quantity="one">%1$d Datei ist jetzt auf dem TV.</item>
+        <item quantity="other">%1$d Dateien sind jetzt auf dem TV.</item>
+    </plurals>
+    <string name="transfer_done_to_phone">%1$s ist jetzt im Handy-Ordner.</string>
+    <string name="transfer_cancelled">Kopieren abgebrochen. Es bleibt keine halbe Datei zurück.</string>
+    <string name="transfer_failed">Nicht kopiert</string>
+    <string name="transfer_phone_file">Die Datei auf dem Handy ließ sich nicht lesen oder schreiben. Ist genug Platz frei?</string>
+    <string name="transfer_no_folder">Wähle zuerst den Ordner auf dem Handy und versuche es dann noch mal.</string>
+    <string name="transfer_refused">Der TV hat das Kopieren abgelehnt.</string>
+
+    <!-- Ordner auf dem Handy -->
+    <string name="folder_title">Ordner auf dem Handy</string>
+    <string name="folder_text">Hier landen Dateien vom TV, Screenshots und Videos.</string>
+    <string name="folder_none">Noch kein Ordner gewählt.</string>
+    <string name="folder_choose">Ordner wählen</string>
+    <string name="folder_change">Ordner ändern</string>
+
+    <!-- Screenshot und Video -->
+    <string name="capture_title">Screenshot und Video</string>
+    <string name="capture_text">Bilder und Videos vom TV-Bildschirm</string>
+    <string name="capture_intro">Macht ein Bild oder Video von dem, was der TV zeigt, und speichert es im Handy-Ordner. Videos dauern bis zu 3 Minuten.</string>
+    <string name="capture_protected">Geschützte Videos, zum Beispiel aus Streaming-Apps, werden oft schwarz. Das sperrt der TV, nicht Zapio.</string>
+    <string name="capture_screenshot">Screenshot machen</string>
+    <string name="capture_record">Video starten</string>
+    <string name="capture_stop">Video beenden</string>
+    <string name="capture_preparing_screenshot">Screenshot wird gemacht…</string>
+    <string name="capture_preparing_video">Video wird gestartet…</string>
+    <string name="capture_recording">Aufnahme läuft</string>
+    <string name="capture_stopping">Video wird abgeschlossen…</string>
+    <string name="capture_time_left">noch %1$s</string>
+    <string name="capture_saving">Wird aufs Handy kopiert…</string>
+    <string name="capture_saved_screenshot">Screenshot gespeichert</string>
+    <string name="capture_saved_video">Video gespeichert</string>
+    <string name="capture_saved_text">%1$s liegt im Handy-Ordner.</string>
+    <string name="capture_open">Öffnen</string>
+    <string name="capture_no_app">Keine App auf dem Handy kann diese Datei öffnen.</string>
+    <string name="capture_preview">Vorschau des Screenshots</string>
+    <string name="capture_failed">Nicht gespeichert</string>
+    <string name="capture_not_taken">Der TV konnte es nicht aufnehmen.</string>
+    <string name="capture_phone_file">Die Datei ließ sich nicht auf dem Handy speichern. Ist genug Platz frei?</string>
+
     <!-- Einstellungen -->
     <string name="settings_title">Einstellungen</string>
     <string name="settings_language">Sprache</string>
