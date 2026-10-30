@@ -34,6 +34,7 @@ import io.github.reichimd.zapio.ui.files.FilesScreen
 import io.github.reichimd.zapio.ui.install.InstallScreen
 import io.github.reichimd.zapio.ui.remote.RemoteScreen
 import io.github.reichimd.zapio.ui.settings.SettingsScreen
+import io.github.reichimd.zapio.ui.terminal.TerminalScreen
 import io.github.reichimd.zapio.ui.theme.ZapioColors
 import io.github.reichimd.zapio.ui.theme.ZapioTheme
 
@@ -80,12 +81,13 @@ private const val INSTALL = "install"
 private const val REMOTE = "remote"
 private const val FILES = "files"
 private const val CAPTURE = "capture"
+private const val TERMINAL = "terminal"
 private const val SETTINGS = "settings"
 private const val ABOUT = "about"
 private const val LICENSE_PREFIX = "license:"
 
 /** Screens that need a connected TV. */
-private val NEEDS_TV = setOf(DEVICE, INSTALL, REMOTE, FILES, CAPTURE)
+private val NEEDS_TV = setOf(DEVICE, INSTALL, REMOTE, FILES, CAPTURE, TERMINAL)
 
 @Composable
 private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (AppLanguage) -> Unit) {
@@ -120,6 +122,7 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
                 onRemote = { open(REMOTE) },
                 onFiles = { open(FILES) },
                 onCapture = { open(CAPTURE) },
+                onTerminal = { open(TERMINAL) },
                 onDisconnect = app.tvs::disconnect,
             )
         }
@@ -129,6 +132,7 @@ private fun ZapioApp(app: ZapioApplication, language: AppLanguage, onLanguage: (
         }
         current == FILES -> FilesScreen(tvs = app.tvs, targetFolder = app.targetFolder, onBack = back)
         current == CAPTURE -> CaptureScreen(tvs = app.tvs, targetFolder = app.targetFolder, onBack = back)
+        current == TERMINAL -> TerminalScreen(tvs = app.tvs, onBack = back)
         current == SETTINGS -> SettingsScreen(
             language = language,
             onLanguage = onLanguage,

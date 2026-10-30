@@ -72,7 +72,7 @@ sealed interface InstallFailure {
 
 /**
  * Everything the app does with TVs: one connection at a time, network search, installing, remote control,
- * files and screen captures.
+ * files, screen captures and the terminal.
  * Lives as long as the app process, so an install keeps running when its screen is left.
  */
 class TvManager(private val context: Context, private val store: DeviceStore, targetFolder: TargetFolder) {
@@ -117,6 +117,8 @@ class TvManager(private val context: Context, private val store: DeviceStore, ta
     val files = TvFileManager(scope, lock, { connection }, phone, targetFolder)
 
     val capture = CaptureManager(scope, lock, { connection }, phone, targetFolder)
+
+    val terminal = TerminalManager(scope) { connection }
 
     fun startRemote() {
         connection?.let(remote::start)
@@ -340,6 +342,7 @@ class TvManager(private val context: Context, private val store: DeviceStore, ta
         remote.stop()
         files.reset()
         capture.reset()
+        terminal.reset()
         val old = connection
         connection = null
         old?.close()
