@@ -48,7 +48,7 @@ class TvAppParsingTest {
 
     @Test
     fun onlyRealPackageNamesReachTheShell() {
-        assertEquals("com.arvio.tv.b8", TvAppParsing.checked("com.arvio.tv.b8"))
+        assertEquals("com.example.tv.b8", TvAppParsing.checked("com.example.tv.b8"))
         for (bad in listOf("", "com", "com.x; reboot", "com.x\nreboot", "-k com.x", "com..x", "\$(id).x")) {
             assertThrows(IllegalArgumentException::class.java) { TvAppParsing.checked(bad) }
         }
