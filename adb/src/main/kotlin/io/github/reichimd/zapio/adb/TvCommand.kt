@@ -3,7 +3,6 @@ package io.github.reichimd.zapio.adb
 import dadb.AdbShellPacket
 import dadb.AdbShellStream
 import dadb.AdbTimeoutException
-import dadb.ID_CLOSE_STDIN
 import java.io.EOFException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -80,11 +79,17 @@ class TvCommand private constructor(private val tv: TvConnection, private val st
     }
 
     internal companion object {
+        /**
+         * Shell packet that closes the program's input. adb's shell protocol numbers it 4;
+         * the library's own constant says 3, which the TV ignores.
+         */
+        private const val CLOSE_STDIN = 4
+
         fun start(tv: TvConnection, command: String): TvCommand {
             val stream = tv.openShellStream(command)
             try {
                 // Nothing is typed into a running command, so a program waiting for input ends at once.
-                stream.write(ID_CLOSE_STDIN)
+                stream.write(CLOSE_STDIN)
             } catch (e: Exception) {
                 runCatching { stream.close() }
                 tv.close()
